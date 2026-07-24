@@ -1,187 +1,144 @@
-# Skill repository template
+# backend — Backend Engineering
 
-Create one independently owned, versioned, and installable agent-skill repository. Runtime skill
-identifiers stay short (`frontend`); GitHub repositories and Codex plugin packages use the
-`<skill>-skill` suffix (`frontend-skill`).
+**Visual guide:** [backend-skill.vercel.app](https://backend-skill.vercel.app)
 
-The template keeps agent-loaded content under `skills/<skill>/` and keeps human documentation,
-evaluation fixtures, releases, and optional site assets outside the runtime package.
+Implement **the running server behind the contract** — API endpoints, domain logic, OLTP
+persistence, auth, async jobs and messaging, caching, security controls, outbound integrations, and
+the tests that prove it works — across REST/GraphQL/gRPC/realtime/serverless-edge/agentic backends
+in Node, Python, Go, Rust, and the JVM. `backend` is the server-side half of the
+**Build** stage of the [Digital Product Skills](https://github.com/gabros20) family, peer of
+`frontend`: an agent skill for implementing production endpoints, business/domain logic, schema and
+migrations, authentication and authorization, background jobs, caching and rate limiting, security
+hardening, third-party integrations, and agent/MCP-serving backends.
 
-## Quick start
+It sits between `architecture` (which decides the boundaries, the contract shape, the NFR budgets,
+and the threat model) and `operate`/`quality` (which deploy, monitor, and independently verify what
+gets built). It owns the **running server and the implementation craft inside the decided shape** —
+not the decision behind it. It is an **implementation router grounded in the current stack, not a
+system-design tool, and not a single-vendor or single-framework skill.**
 
-```bash
-gh repo create gabros20/<skill>-skill \
-  --template gabros20/skill-template \
-  --private \
-  --clone
-cd <skill>-skill
+## What it does
 
-# Runtime skill + README/docs/evals only
-scripts/init <skill> "<Skill Title>" "<25-64 character tagline>" \
-  "#336699" "#6699cc" 220
+A **faceted router**: pick one primary job × at most one base surface (the agentic overlay stacks
+additively on top).
 
-# Keep the static documentation site
-scripts/init <skill> "<Skill Title>" "<tagline>" \
-  "#336699" "#6699cc" 220 --site
+**Primary jobs** — API implementation · domain logic · persistence · auth · async & messaging ·
+caching & performance · server security · service integration · backend testing.
 
-# Keep the site and Remotion video-authoring project
-scripts/init <skill> "<Skill Title>" "<tagline>" \
-  "#336699" "#6699cc" 220 --site --video
-```
+**Surface overlays** — REST/CRUD service (default) · serverless/edge · realtime · event-driven
+microservices · **agentic** (additive). The base surface reshapes how every job applies for that
+runtime/system type; `surface-agentic` stacks on top of whichever base surface applies rather than
+replacing it.
 
-Initialization is intentionally not a release. Replace the remaining `TODO` content, then work
-through [TEMPLATE-CHECKLIST.md](TEMPLATE-CHECKLIST.md). `scripts/check-sync` fails closed until the
-runtime pack, metadata, and evaluation fixtures are complete.
+**The differentiator:** first-class **agentic-backend** support as the flagship overlay — durable
+execution as the default control plane, tool/MCP endpoints, agent-legible typed contracts and
+errors, and RAG-retrieval plumbing that calls `ai`'s core without owning it. Plus three invariants no
+single-vendor or single-framework skill carries: **retrieval-first / anti-staleness** (fetch current
+framework/ORM/DB docs before generating anything version-specific — Prisma 7, Drizzle 1.0, Go 1.22
+routing, Kafka 4.0's KRaft-only cutover all ship breaking changes fast), **default-stack-then-deviate**
+(name the current modal pick per language, but every recommendation is a concrete choice + what NOT
+to build + a trade-off, weighted by reversibility — never trend-chasing), and **DB-license-teaching**
+(SSPL, BSL, AGPL, and source-available self-host/resale implications, with the permissive escape
+hatches named) — a distinctive value-add most backend material skips entirely.
 
-## Repository contract
+Every method is grounded in its named source: OWASP Top 10 and ASVS, the 12-Factor App, OAuth
+2.0/OIDC with PKCE (RFC 9700), Domain-Driven Design tactical patterns, the transactional-outbox and
+saga patterns, Zanzibar-style ReBAC, Google/AWS/Azure well-architected guidance on pooling and
+durable execution (Temporal, Hatchet), and the current official docs for each covered
+framework/ORM/datastore. Full attribution in [SOURCES.md](SOURCES.md).
 
-```text
-<skill>-skill/
-├── .codex-plugin/
-│   └── plugin.json
-├── skills/
-│   └── <skill>/
-│       ├── SKILL.md
-│       ├── agents/
-│       │   └── openai.yaml
-│       └── references/
-├── evals/
-│   ├── activation/
-│   ├── traversal/
-│   ├── output/
-│   └── compression-ablation/
-├── docs/
-├── scripts/
-├── AGENTS.md
-├── CLAUDE.md
-├── README.md
-├── CHANGELOG.md
-├── CONTRIBUTING.md
-└── LICENSE
-```
-
-Add runtime `scripts/` and `assets/` only when the skill has a real consumer for them. README,
-changelog, contribution guidance, research, design records, and release tooling stay outside the
-runtime directory.
-
-## Runtime authoring standard
-
-`SKILL.md` is the activation-time router, not an encyclopedia. Use this order:
-
-1. Mission and ownership boundary.
-2. Conditional routes with direct Markdown links and expected contributions.
-3. Universal invariants.
-4. Short, artifact-driven workflow.
-5. Artifact contract.
-6. Evidence-based completion and handoff.
-
-Every reference begins with `Purpose`, `Read when`, `Skip when`, `Inputs`, and `Produces`. Keep
-references one level below `SKILL.md`; add an early `## Contents` when a reference exceeds 100
-lines. Prefer tested scripts for fragile or repeated mechanics.
-
-The runtime frontmatter contains only:
-
-```yaml
----
-name: <skill>
-description: <outcome, triggers, and close-neighbor exclusions>
----
-```
-
-Versions, repository URLs, licensing, and storefront metadata do not belong in runtime
-frontmatter.
-
-## Standalone and composition behavior
-
-Every generated skill must work when invoked alone. A domain skill may consume supplied upstream
-artifacts and recommend a next skill, but it must not silently invoke neighboring skills.
-Compatibility with a larger composition system is optional and must be backed by contract tests.
-
-## Evaluation layers
-
-Keep the four layers separate so a failure points to the correct fix:
-
-| Layer | Question |
-|---|---|
-| Activation | Should this skill trigger for this request? |
-| Traversal | Did it load the smallest sufficient reference set? |
-| Output | Did it satisfy the artifact and completion contracts? |
-| Compression | Did a shorter candidate preserve quality and safety? |
-
-`scripts/check-sync` validates fixture structure. Model-driven evaluation runners can be added per
-repository without changing the portable fixture contract.
-
-## Validation
+## Install
 
 ```bash
-scripts/check-sync
-scripts/count-skill-tokens
+npx skills add gabros20/backend-skill -g -y
 ```
 
-The baseline gate checks:
+Or use it in Codex with `$backend`.
 
-- Exactly one primary skill.
-- Frontmatter compatibility and description budget.
-- Direct, flat, self-describing references and long-file contents lists.
-- `agents/openai.yaml` and `.codex-plugin/plugin.json` alignment.
-- Runtime placeholders, broken paths, script executability, and eval fixtures.
-- README, `AGENTS.md`, `CLAUDE.md`, contribution, changelog, and license files.
-- Plugin version alignment with the latest released changelog entry.
-- Initializer safety with punctuation-heavy values.
-
-Specialized repositories may add domain-specific checks after the baseline gate; they must not
-replace it.
-
-Repository agents should read [AGENTS.md](AGENTS.md); Claude Code receives the same rules through
-the lightweight [CLAUDE.md](CLAUDE.md) pointer. Derived repositories must rewrite both files for
-their own ownership boundary and non-negotiable invariants.
-
-## Versioning and releases
-
-Release each repository independently. The canonical release version lives in:
-
-- `.codex-plugin/plugin.json`
-- The newest released `CHANGELOG.md` heading
-- Git tag `v<version>` and the matching GitHub Release
-
-Do not duplicate the version in `SKILL.md`. Research or design records are appropriate for material
-decisions, not mandatory ceremony for every patch.
-
-## Invocation and installation language
-
-Use `/skill` only as documentation shorthand. Client-facing examples must name the actual form:
-
-- Codex: `$skill`
-- Slash-command clients: `/skill`
-- Other hosts: `@skill`, a skill tool, or natural-language activation
-
-The generated installer keeps Codex and cross-agent paths separate:
+## Examples
 
 ```text
-codex  → ${CODEX_HOME:-$HOME/.codex}/skills
-agents → $HOME/.agents/skills
+$backend build the REST endpoints behind this contract — pagination, versioning, error shape
+
+$backend design the domain/service layer for checkout so rules stop leaking into handlers
+
+$backend add OAuth2/OIDC login with PKCE and decide sessions vs JWT
+
+$backend set up the outbox and saga for this order-fulfillment workflow
+
+$backend expose an MCP/tool endpoint for our agent backend — durable execution, agent-legible errors
 ```
 
-## Optional publishing profiles
+## Route by job
 
-The README is every repository's primary GitHub storefront. `--site` keeps the static site and
-Vercel files; `--video` additionally keeps Remotion. Site and video work never block runtime skill
-correctness unless that repository explicitly makes them part of its release scope.
+| User intent | Reads | Contribution |
+|---|---|---|
+| Build/scaffold/extend endpoints, handlers, routers, resolvers, or RPC methods; pick REST/GraphQL/gRPC/tRPC; set pagination, versioning, error shape | [api-implementation](skills/backend/references/api-implementation.md) | Transport pick, request-lifecycle wiring, single-source schema, uniform error shape, cursor pagination, in-code versioning |
+| Add/refactor business logic, a service or use-case layer, or domain models; apply DDD tactical / clean / hexagonal; stop rules leaking into handlers | [domain-logic](skills/backend/references/domain-logic.md) | Layered domain/application/infra structure, aggregates/entities/VOs, anti-anemic litmus, dependency rule |
+| Design schema/indexes, choose ORM vs raw SQL, write a migration, get transactions/isolation right, size a pool, kill N+1 | [persistence](skills/backend/references/persistence.md) | Schema+index+expand/contract migration, isolation decision, pooling matched to runtime, DB-license flag |
+| Add login/signup/sessions, protect a route, add OAuth/SSO, store passwords, decide who-can-do-what | [auth](skills/backend/references/auth.md) | Session-vs-JWT decision, OAuth2/OIDC+PKCE flow, Argon2id config, RBAC/ABAC/ReBAC model + library pick |
+| Background jobs, queues, workers, event-driven services, pub/sub, CDC, outbox, saga, idempotency, durable workflows | [async-and-messaging](skills/backend/references/async-and-messaging.md) | Broker/queue pick, idempotency-key path, transactional outbox, saga+compensations, delivery stance, durable-execution decision |
+| Add a cache and invalidate it, implement rate limiting, or diagnose a slow endpoint/query | [caching-and-performance](skills/backend/references/caching-and-performance.md) | Cache strategy by staleness/loss tolerance, invalidation mechanism, distributed-correct token bucket, measured bottleneck + fix |
+| Secure the API, add security headers, fix CORS, prevent injection, store secrets, implement a threat model's controls | [server-security](skills/backend/references/server-security.md) | Uniform OWASP controls table (control→impl→verify) with self-audit count, mapped to Top 10:2021 / ASVS |
+| Call a third-party API, receive/deliver webhooks, add a gRPC/HTTP client, tune a circuit breaker | [service-integration](skills/backend/references/service-integration.md) | Resilient client wrapper (retry + circuit breaker), verified idempotent webhooks in/out |
+| Write/run/fix backend tests, or "prove this works" | [backend-testing](skills/backend/references/backend-testing.md) | Layered test suite, real-dependency integration tests, contract-producer check, ✓/✗ verification report |
 
-**Color-identity system.** Family sites share one chrome — the type system, layout grammar,
-light/dark theming, hero-terminal, and "Start here" shapes — while each skill owns a unique accent:
-the `<accent-light-hex> <accent-dark-hex> <oklch-hue>` triple passed to `scripts/init`, rendered
-into the site tokens and mirrored by the Remotion palette (`remotion/src/theme.ts`).
+**Surface overlay (add at most one base; the agentic overlay stacks additively):**
 
-**Designed per skill, not copied.** The site skeleton is a scaffold. [site/README.md](site/README.md)
-is the binding design brief: inventory the skill's mental model, reshape the sections to match it,
-build purpose-built components, and storyboard a Remotion hero for that skill. Reference build:
-[orchestrate-skill.vercel.app](https://orchestrate-skill.vercel.app).
+| System type | Reads | Reshapes |
+|---|---|---|
+| Standard long-running request/response service — modular monolith or a few services (default) | [surface-rest-crud](skills/backend/references/surface-rest-crud.md) | Concern-scoping model pick, adapter-isolates-runtime seam, per-language idioms, 12-factor scaffold |
+| Serverless / edge — Workers, Lambda, Bun-edge, Vercel/Netlify functions | [surface-serverless-edge](skills/backend/references/surface-serverless-edge.md) | Statelessness, the connection-pooling failure mode (txn-mode pooler or HTTP-native driver), D1/KV/R2/Durable-Objects mapping |
+| Realtime — WebSocket/SSE/pub-sub, stateful connections, presence, rooms | [surface-realtime](skills/backend/references/surface-realtime.md) | SSE-vs-WS transport, actor-per-connection/room, presence abstraction, per-message reliability, fan-out/scaling |
+| Event-driven microservices — independently deployed polyglot services over gRPC + an event backbone | [surface-event-driven-microservices](skills/backend/references/surface-event-driven-microservices.md) | Modular-monolith-first gate, database-per-service consequences (saga/CQRS), inter-service contract evolution, sync-vs-async classification |
+| **Agentic** — backend serving an LLM/agent system, stacked additively on the base surface | [surface-agentic](skills/backend/references/surface-agentic.md) | **Durable execution as default control plane, tool/MCP endpoints, agent-legible typed contracts + errors, RAG plumbing, agent-scoped short-lived tokens** |
 
-**GitHub About area.** At release, set the repository description (family style, "Agent skill for
-… — …"), the canonical site alias as homepage, and topics (`agent-skills ai-agents claude
-claude-code` plus domain topics) with `gh repo edit` — see TEMPLATE-CHECKLIST §6.
+Plus [handoff](skills/backend/references/handoff.md) — the `handoff.yaml` companion to `operate`
+(deploy/monitor) and `quality` (independent verification) when downstream work is expected.
+
+## Outputs
+
+A running implementation plus the decision record behind it: endpoint/handler code, a domain/service
+layer, schema and migrations, auth wiring, job/queue setup, cache and rate-limit configuration, an
+OWASP controls table, resilient outbound client wrappers, and the test suite that proves it all
+runs — plus fillable checklists and a `handoff.yaml` companion that feeds `operate`/`quality`
+downstream, grounded in the framework each artifact names, never a generic template dump.
+
+## Reference and asset library
+
+15 references under `skills/backend/references/` (9 primary jobs, 5 surface overlays, 1 handoff
+contract) and 8 fillable assets under `skills/backend/assets/`:
+
+- **Assets:** `backend-service-scaffold.md` · `migration-template.md` ·
+  `auth-implementation-checklist.md` · `owasp-backend-controls-checklist.md` ·
+  `idempotency-and-outbox-recipes.md` · `api-contract-review-checklist.md` ·
+  `verification-loop-template.md` · `handoff.yaml`
+
+## Digital Product lifecycle
+
+`backend` is the server-side half of the **Build** stage, peer of `frontend`: it consumes
+`architecture`'s contracts, NFR budgets, threat model, and `handoff.yaml` upstream, and hands its
+own running services and telemetry hooks to `operate` and its test suite to `quality` downstream,
+with `data` and `ai` consumed rather than owned for OLAP pipelines and the agent core respectively.
+It works standalone with no upstream artifact required, and never silently invokes a sibling skill.
+
+## Repository layout
+
+```text
+skills/backend/    runtime skill (SKILL.md + 15 references + 8 assets + agents/openai.yaml)
+evals/              activation · traversal · output · compression-ablation fixtures
+docs/                installation and usage
+.codex-plugin/      plugin manifest
+```
+
+## Documentation & releases
+
+- [docs/installation.md](docs/installation.md) · [docs/usage.md](docs/usage.md) ·
+  [docs/recipes.md](docs/recipes.md)
+- [CHANGELOG.md](CHANGELOG.md) — release history (current: v0.1.0)
+- [SOURCES.md](SOURCES.md) — framework attribution and license posture
+- [CONTRIBUTING.md](CONTRIBUTING.md) — local validation (`scripts/lint-skill`, `scripts/check-sync`)
 
 ## License
 
-[MIT](LICENSE)
+MIT — see [LICENSE](LICENSE).

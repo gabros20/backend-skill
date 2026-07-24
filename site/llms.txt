@@ -1,30 +1,64 @@
 # backend
 
-> Build the server: APIs, data, auth, and background jobs. Installs as an agent skill.
+> Build the server behind the contract — APIs, domain logic, OLTP persistence, auth, async/jobs,
+> caching, security controls, integration, and the tests that prove it — at the Build stage.
+> Installs as an agent skill.
 
-TODO — one paragraph: what problem this replaces, the workflow it runs (stages/strategies, in
-order), and what "read only what you need" the router gives you. Claude Code is the reference
-host; it's plain Agent Skills format (agentskills.io), so it installs on Codex, Cursor,
-Antigravity, opencode, Grok Build, and Hermes too.
+Ask an agent for an endpoint and it writes plausible handler code from memory — a stale ORM call, an
+ad-hoc error shape, auth improvised, a job that drops on retry. backend builds the running server
+instead. It is a faceted router, not a fixed pipeline: before generating any framework/ORM/DB code it
+fetches the current official docs (retrieval-first, because backends ship breaking changes fast), then
+each request selects one primary job (api-implementation · domain-logic · persistence · auth ·
+async-and-messaging · caching-and-performance · server-security · service-integration ·
+backend-testing) combined with at most one base surface (rest-crud · serverless-edge · realtime ·
+event-driven-microservices) — plus the additive surface-agentic overlay when the caller is an
+LLM/agent system. Only the two or three references a route needs are read, never the whole pack. It
+names the modal default stack per language (TS: Hono/tRPC + managed Postgres + Drizzle/Prisma +
+Better-Auth; Python: FastAPI + SQLAlchemy + Alembic; Go: net/http + sqlc/pgx) then says when to
+deviate, and it proves the code runs (lint → migrate → test → hit the endpoint) before calling the job
+done. Agent-native backends — durable execution, tool/MCP endpoints, agent-legible typed contracts —
+are the first-class differentiator. Claude Code is the reference host; it's plain Agent Skills format
+(agentskills.io), so it installs on Codex, Cursor, Antigravity, opencode, Grok Build, and Hermes too.
 
 ## Install
 
-- npm/skills.sh: `npx skills add gabros20/backend-skill`
+- npm/skills.sh: `npx skills add gabros20/backend-skill -g -y`
 - Clone + installer (per-host targets: claude | codex | cursor | antigravity | opencode | grok | hermes | agents | all): `git clone https://github.com/gabros20/backend-skill && cd backend-skill && ./install.sh codex`
 - Manual copy: `cp -R skills/backend ~/.claude/skills/backend`
 
 ## Docs
 
 - [README.md](https://raw.githubusercontent.com/gabros20/backend-skill/main/README.md): overview, install, workflow, and repository map.
-- [skills/backend/SKILL.md](https://raw.githubusercontent.com/gabros20/backend-skill/main/skills/backend/SKILL.md): runtime router, workflow, artifact contract, and completion rules.
+- [skills/backend/SKILL.md](https://raw.githubusercontent.com/gabros20/backend-skill/main/skills/backend/SKILL.md): runtime router, invariants, artifact contract, and completion rules.
 - [docs/installation.md](https://raw.githubusercontent.com/gabros20/backend-skill/main/docs/installation.md): installation and verification by client.
 - [docs/usage.md](https://raw.githubusercontent.com/gabros20/backend-skill/main/docs/usage.md): activation boundary, routes, outputs, and completion.
 - [docs/recipes.md](https://raw.githubusercontent.com/gabros20/backend-skill/main/docs/recipes.md): representative starting prompts.
 
 ## Reference inventory (`skills/backend/references/`)
 
-- `example.md` — TODO: what job this reference answers.
+Primary jobs (pick one):
+- `api-implementation.md` — the server behind the contract: routing, middleware, request lifecycle, validation, serialization, error shape, cursor pagination, versioning-in-code; REST/GraphQL/gRPC/tRPC server impl.
+- `domain-logic.md` — business/domain layer: use-cases, service layer, DDD tactical (aggregates/entities/VOs), clean/hexagonal layering, anti-anemic-model, the dependency rule.
+- `persistence.md` — OLTP data access: ORM/query-builder/raw SQL, schema + index + expand/contract migrations, transactions + isolation levels, connection pooling, N+1, Postgres-for-everything.
+- `auth.md` — authN/authZ implementation: sessions vs JWT, OAuth2/OIDC (PKCE, RFC 9700), Argon2id hashing, RBAC/ABAC/ReBAC enforcement, Better-Auth/Ory/Keycloak integration.
+- `async-and-messaging.md` — jobs/queues/workers, event-driven, brokers, outbox · saga · idempotency, durable execution (Temporal/Hatchet), CDC, delivery semantics.
+- `caching-and-performance.md` — caching strategies + invalidation, rate limiting (distributed token bucket), query/perf tuning, pooling-as-perf.
+- `server-security.md` — implementing the threat model's controls: input validation, injection prevention, secrets, CORS, security headers, mTLS/CSRF (OWASP Top 10:2021 / ASVS), as a uniform table.
+- `service-integration.md` — outbound seams: HTTP/gRPC clients, retries+jitter/circuit-breakers, webhooks (in/out), calling an AI service / email / 3rd-party provider.
+- `backend-testing.md` — the skill's own verification loop: unit/integration/contract-producer tests, testcontainers, prove-it-works ✓/✗ report.
+
+Surface overlays (add at most one base; surface-agentic is additive):
+- `surface-rest-crud.md` — default: standard long-running request/response service (modular monolith or a few services); concern-scoping model, adapter-isolates-runtime seam, per-language idioms, 12-factor scaffold.
+- `surface-serverless-edge.md` — Workers/Lambda/Bun-edge: statelessness, the connection-pooling failure mode (txn-mode pooler or HTTP-native driver), D1/KV/R2/Durable-Objects mapping.
+- `surface-realtime.md` — WebSocket/SSE/pub-sub, stateful connections, presence, rooms; SSE-vs-WS transport, actor-per-connection/room, per-message reliability, fan-out/scaling.
+- `surface-event-driven-microservices.md` — independently deployed polyglot services over gRPC + an event backbone (Kafka/NATS); modular-monolith-first gate, database-per-service (saga/CQRS), inter-service contract evolution.
+- `surface-agentic.md` — FLAGSHIP, additive: backend serving an LLM/agent system — durable execution as default control plane, tool/MCP endpoints, agent-legible typed contracts + errors, RAG plumbing (not the core), agent-scoped short-lived tokens.
+
+Pipeline:
+- `handoff.md` — standalone vs pipeline behavior and the `handoff.yaml` companion consumed by operate, quality, frontend, data, and ai.
+
+Assets (`skills/backend/assets/`): backend-service-scaffold.md (12-factor) · migration-template.md (expand/contract, zero-downtime) · auth-implementation-checklist.md · owasp-backend-controls-checklist.md · idempotency-and-outbox-recipes.md · api-contract-review-checklist.md · verification-loop-template.md · handoff.yaml.
 
 ## Optional
 
-- [Visual guide](https://backend-skill.vercel.app): the workflow, boundaries, and reference map on one page.
+- [Visual guide](https://backend-skill.vercel.app): the router, jobs, surfaces, invariants, artifacts, and handoff seam on one page.

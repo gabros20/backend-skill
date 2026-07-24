@@ -1,5 +1,7 @@
 <!doctype html>
-<!-- skill-site scaffold: shared family chrome; identity = the accent triple PLUS sections, components, and a hero designed for THIS skill. Read site/README.md (the design brief) before editing — filling the TODOs is not a site. Keep the hero-terminal and Start-here shapes. -->
+<!-- backend skill · visual guide. Shared family chrome (tokens, type, hero-terminal, footer);
+     identity = emerald accent + sections/diagrams/hero designed for THIS skill's faceted router
+     (9 primary jobs × 5 surfaces, agentic ⭐ additive) at the Build stage behind the contract. -->
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -7,14 +9,14 @@
 <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f6f7fa">
 <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#12151d">
 <title>backend — Build the server: APIs, data, auth, and background jobs</title>
-<meta name="description" content="TODO — one to two sentence description of the skill for search engines.">
+<meta name="description" content="A faceted agent skill for the Build stage behind the contract: API implementation, domain logic, persistence, auth, async/jobs, caching, security, integration, and tests — across REST/GraphQL/gRPC/realtime/serverless-edge in Node/Python/Go/Rust/JVM, retrieval-first and default-stack-then-deviate, with agent-native backends as the first-class surface.">
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="https://backend-skill.vercel.app/">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 
 <meta property="og:type" content="website">
-<meta property="og:title" content="backend — Build the server: APIs, data, auth, and background jobs">
-<meta property="og:description" content="TODO — one to two sentence description for social previews.">
+<meta property="og:title" content="backend — build the server behind the contract">
+<meta property="og:description" content="A faceted agent skill for the Build stage: APIs, domain logic, persistence, auth, async/jobs, caching, security, integration, and tests — retrieval-first, default-stack-then-deviate, with agent-native backends first-class.">
 <meta property="og:url" content="https://backend-skill.vercel.app/">
 <meta property="og:image" content="https://backend-skill.vercel.app/og.png">
 <meta property="og:image:width" content="1200">
@@ -22,8 +24,8 @@
 <meta property="og:site_name" content="backend">
 
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="backend — Build the server: APIs, data, auth, and background jobs">
-<meta name="twitter:description" content="TODO — one to two sentence description for social previews.">
+<meta name="twitter:title" content="backend — build the server behind the contract">
+<meta name="twitter:description" content="A faceted agent skill for the Build stage: APIs, data, auth, async/jobs, caching, security, integration, tests — retrieval-first, agent-native first-class.">
 <meta name="twitter:image" content="https://backend-skill.vercel.app/og.png">
 
 <script type="application/ld+json">
@@ -31,9 +33,9 @@
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
   "name": "backend",
-  "applicationCategory": "DesignApplication",
+  "applicationCategory": "DeveloperApplication",
   "operatingSystem": "Claude Code / agent CLIs",
-  "description": "TODO — one to two sentence description of the skill.",
+  "description": "A faceted agent skill for the Build stage behind the contract — API implementation, domain logic, OLTP persistence, auth, async/jobs, caching, security controls, integration, and tests — across REST/GraphQL/gRPC/realtime/serverless-edge/agentic backends in Node/Python/Go/Rust/JVM, retrieval-first and default-stack-then-deviate, with agent-native backends as a first-class surface.",
   "url": "https://backend-skill.vercel.app/",
   "offers": {
     "@type": "Offer",
@@ -50,27 +52,36 @@
     --bg:#f6f7fa; --panel:#ffffff; --ink:#1c2333; --muted:#5a6478; --line:#d8dde8;
     --accent:#059669; --accent-ink:#ffffff; --amber:#a97a10; --amber-bg:#fdf6e3;
     --good:#1e7f4f; --bad:#b3403a; --code-bg:#eef1f7; --glyph:#8391ad;
-    --tok-strat:#059669; --tok-dim:#8146c9; --tok-val:#1e7f4f; --tok-file:#a97a10;
+    --tok-job:#059669; --tok-dim:#8146c9; --tok-val:#1e7f4f; --tok-file:#a97a10;
+    --dim-bg:rgba(129,70,201,.08);
   }
   @media (prefers-color-scheme: dark){ :root{
     --bg:#12151d; --panel:#1a1f2b; --ink:#e6eaf3; --muted:#93a0b8; --line:#2b3245;
     --accent:#34d399; --accent-ink:#0d1220; --amber:#d9a72e; --amber-bg:#26200f;
     --good:#4cc38a; --bad:#e5726c; --code-bg:#141824; --glyph:#5d6a85;
-    --tok-strat:#34d399; --tok-dim:#b98aef; --tok-val:#4cc38a; --tok-file:#d9a72e;
+    --tok-job:#34d399; --tok-dim:#b98aef; --tok-val:#4cc38a; --tok-file:#d9a72e;
+    --dim-bg:rgba(185,138,239,.13);
   }}
   :root[data-theme="dark"]{
     --bg:#12151d; --panel:#1a1f2b; --ink:#e6eaf3; --muted:#93a0b8; --line:#2b3245;
     --accent:#34d399; --accent-ink:#0d1220; --amber:#d9a72e; --amber-bg:#26200f;
     --good:#4cc38a; --bad:#e5726c; --code-bg:#141824; --glyph:#5d6a85;
-    --tok-strat:#34d399; --tok-dim:#b98aef; --tok-val:#4cc38a; --tok-file:#d9a72e;
+    --tok-job:#34d399; --tok-dim:#b98aef; --tok-val:#4cc38a; --tok-file:#d9a72e;
+    --dim-bg:rgba(185,138,239,.13);
   }
   :root[data-theme="light"]{
     --bg:#f6f7fa; --panel:#ffffff; --ink:#1c2333; --muted:#5a6478; --line:#d8dde8;
     --accent:#059669; --accent-ink:#ffffff; --amber:#a97a10; --amber-bg:#fdf6e3;
     --good:#1e7f4f; --bad:#b3403a; --code-bg:#eef1f7; --glyph:#8391ad;
-    --tok-strat:#059669; --tok-dim:#8146c9; --tok-val:#1e7f4f; --tok-file:#a97a10;
+    --tok-job:#059669; --tok-dim:#8146c9; --tok-val:#1e7f4f; --tok-file:#a97a10;
+    --dim-bg:rgba(129,70,201,.08);
   }
   *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%; text-size-adjust:100%}
+  html,body{overflow-x:hidden; max-width:100%}
+  /* grid/flex children holding white-space:pre blocks must be allowed to shrink so the block's
+     own overflow-x:auto engages instead of forcing page-level horizontal scroll */
+  .wedgegrid>*,.seam>*,.downstream>*,.seambox,.harnessblock,.artgrid>*,.stackgrid>*{min-width:0}
   body{background:var(--bg); color:var(--ink); font:16px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif; margin:0; -webkit-font-smoothing:antialiased}
   .wrap{max-width:1060px; margin:0 auto; padding:0 24px 96px}
   code,.mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace}
@@ -81,7 +92,7 @@
   h2::after{content:""; flex:1; height:1px; background:var(--line)}
   h2 .lu{color:var(--accent); width:20px; height:20px}
   section{margin-top:64px}
-  .lede{font-size:19px; color:var(--muted); max-width:60ch; margin:0}
+  .lede{font-size:19px; color:var(--muted); max-width:64ch; margin:0}
   .hosts{display:flex; flex-wrap:wrap; align-items:center; gap:7px; margin:16px 0 0}
   .hosts .hl{font-family:"Avenir Next Condensed","Arial Narrow",system-ui,sans-serif; text-transform:uppercase; letter-spacing:.14em; font-weight:600; font-size:11px; color:var(--muted); margin-right:2px}
   .hosts span:not(.hl){font-family:ui-monospace,Menlo,monospace; font-size:11.5px; color:var(--muted); background:var(--code-bg); border-radius:5px; padding:3px 8px; white-space:nowrap}
@@ -93,10 +104,13 @@
   /* lucide icons */
   .lu{width:18px; height:18px; fill:none; stroke:currentColor; stroke-width:1.75; stroke-linecap:round; stroke-linejoin:round; flex:none; vertical-align:-3px}
 
-  /* top nav */
-  nav{display:flex; flex-wrap:wrap; gap:8px; margin-top:26px}
-  nav a{font-family:ui-monospace,Menlo,monospace; font-size:12.5px; text-decoration:none; color:var(--muted); border:1px solid var(--line); border-radius:999px; padding:4px 12px; background:var(--panel)}
-  nav a:hover,nav a:focus-visible{color:var(--accent); border-color:var(--accent); outline:none}
+  /* top nav + section nav */
+  nav.toplinks{display:flex; flex-wrap:wrap; gap:8px; margin-top:26px}
+  nav.toplinks a{font-family:ui-monospace,Menlo,monospace; font-size:12.5px; text-decoration:none; color:var(--muted); border:1px solid var(--line); border-radius:999px; padding:4px 12px; background:var(--panel)}
+  nav.toplinks a:hover,nav.toplinks a:focus-visible{color:var(--accent); border-color:var(--accent); outline:none}
+  .secnav{display:flex; flex-wrap:wrap; gap:8px; margin-top:26px}
+  .secnav a{font-family:ui-monospace,Menlo,monospace; font-size:12.5px; text-decoration:none; color:var(--muted); border:1px solid var(--line); border-radius:999px; padding:4px 12px; background:var(--panel)}
+  .secnav a:hover,.secnav a:focus-visible{color:var(--accent); border-color:var(--accent); outline:none}
   .secnav a::before{content:"#"; color:var(--glyph); margin-right:5px}
   .secnav a:hover::before,.secnav a:focus-visible::before{color:var(--accent)}
 
@@ -105,80 +119,166 @@
   .term .c{color:var(--muted)}
   .term .p{color:var(--accent); font-weight:600}
 
-  /* the arc — animated explainer: a Remotion video, light/dark, swapped in
-     as progressive enhancement over the static one-line arc fallback below */
-  .vidwrap{display:none; margin-top:20px}
+  /* the hero — Remotion video (light/dark) over the static router fallback */
+  .vidwrap{display:none; margin-top:22px}
   .vidwrap video{display:block; width:100%; aspect-ratio:16/9; border:1px solid var(--line); border-radius:10px; background:var(--bg); box-shadow:0 30px 70px -40px rgba(0,0,0,.45)}
   body.has-vid .vidwrap{display:block}
-  body.has-vid .poster{display:none}
-  .poster{background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:20px; margin-top:20px}
-  .arcline{font-family:ui-monospace,Menlo,monospace; font-size:14.5px; line-height:2; color:var(--muted); margin:0}
-  .arcline b{color:var(--ink); font-weight:600}
-  .arcline .ar{color:var(--glyph); margin:0 2px}
+  body.has-vid .herofallback{display:none}
+
+  /* router fallback / centerpiece — facet composition */
+  .router{background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:22px 24px; margin-top:22px}
+  .gate{display:flex; align-items:center; gap:10px; font-family:ui-monospace,Menlo,monospace; font-size:12.5px; color:var(--muted); padding:0 0 16px; margin-bottom:16px; border-bottom:1px dashed var(--line)}
+  .gate .lu{width:16px; height:16px; color:var(--accent); flex:none}
+  .gate b{color:var(--ink)}
+  .rlane{display:grid; grid-template-columns:150px 1fr; gap:14px 16px; align-items:center}
+  .rlane + .rlane{margin-top:12px}
+  .rlabel{font-family:"Avenir Next Condensed","Arial Narrow",system-ui,sans-serif; text-transform:uppercase; letter-spacing:.1em; font-weight:600; font-size:12px; color:var(--muted); text-align:right; line-height:1.25}
+  .rlabel small{display:block; font-family:ui-monospace,Menlo,monospace; text-transform:none; letter-spacing:0; font-weight:400; font-size:10.5px; color:var(--glyph)}
+  .chips{display:flex; flex-wrap:wrap; gap:7px}
+  .chip{font-family:ui-monospace,Menlo,monospace; font-size:12.5px; padding:5px 11px; border-radius:8px; white-space:nowrap; color:var(--muted); background:var(--bg); border:1px solid var(--line)}
+  .chip.on{color:var(--accent-ink); background:var(--accent); border-color:var(--accent); font-weight:600}
+  .chip.dimon{color:var(--tok-dim); background:var(--dim-bg); border-color:var(--tok-dim); font-weight:600}
+  .chip .st{color:var(--amber); font-weight:700; margin-left:4px}
+  .rdown{display:flex; align-items:center; gap:10px; margin:16px 0 14px; color:var(--glyph)}
+  .rdown::before,.rdown::after{content:""; flex:1; height:1px; background:var(--line)}
+  .rdown span{font-family:ui-monospace,Menlo,monospace; font-size:12px; color:var(--muted)}
+  .readset{display:flex; flex-wrap:wrap; gap:9px; align-items:center}
+  .readset code{font-family:ui-monospace,Menlo,monospace; font-size:12.5px; padding:6px 12px; border-radius:8px; color:var(--accent); background:var(--code-bg); border:1px solid var(--accent)}
+  .readset .cnt{font-family:ui-monospace,Menlo,monospace; font-size:12px; color:var(--muted); margin-left:4px}
+  .readset .cnt b{color:var(--ink)}
+  .rrule{margin:16px 0 0; font-size:13.5px; color:var(--muted); display:flex; gap:9px; line-height:1.55}
+  .rrule .lu{color:var(--accent); flex:none; margin-top:1px; width:17px; height:17px}
+  .rrule b{color:var(--ink)}
   .pcap{font-size:13.5px; color:var(--muted); margin:14px 0 0; max-width:68ch}
   .pcap b{color:var(--ink)}
+  @media (max-width:560px){ .rlane{grid-template-columns:1fr; gap:6px} .rlabel{text-align:left} }
 
-  /* numbered stage timeline */
-  .steps{margin-top:20px; counter-reset:step}
-  .steps>div{position:relative; padding:0 0 22px 46px; --sc:var(--accent)}
-  .steps>div::before{counter-increment:step; content:counter(step); position:absolute; left:0; top:-3px; width:28px; height:28px; border-radius:50%; background:var(--panel); border:2px solid var(--sc); color:var(--sc); font-family:ui-monospace,Menlo,monospace; font-size:13px; font-weight:600; display:flex; align-items:center; justify-content:center}
-  .steps>div::after{content:""; position:absolute; left:13px; top:31px; bottom:-6px; width:2px; background:var(--line)}
-  .steps>div:last-child{padding-bottom:0}
-  .steps>div:last-child::after{display:none}
-  .steps b{display:flex; align-items:center; gap:8px; font-family:ui-monospace,Menlo,monospace; font-size:14px; margin:2px 0 4px}
-  .steps b .lu{width:15px; height:15px; color:var(--sc)}
-  .steps span{font-size:13.5px; color:var(--muted); display:block; line-height:1.55; max-width:66ch}
-  .steps span b{display:inline; font-family:inherit; font-size:inherit; color:var(--ink); margin:0; font-weight:600}
-  .steps span code{font-size:12px; background:var(--code-bg); padding:1px 4px; border-radius:4px; overflow-wrap:anywhere}
-
-  /* reference cards, grouped by stage */
-  /* reference map — stage → chips definition list (voids impossible by construction; lighter
-     than the card-heavy neighbouring sections, so it varies the page rhythm) */
-  .refmap{margin-top:20px}
-  .refrow{display:grid; grid-template-columns:200px 1fr; gap:8px 18px; padding:14px 0; align-items:start}
-  .refrow + .refrow{border-top:1px solid var(--line)}
-  .refrow dt, .refrow dd{margin:0}
-  .reflabel{display:flex; align-items:center; gap:8px; font-family:ui-monospace,Menlo,monospace; font-size:14px; letter-spacing:-.01em; color:var(--ink)}
-  .reflabel .lu{color:var(--accent); width:16px; height:16px; flex:none}
-  .reflabel .ct{margin-left:auto; font-size:11px; color:var(--accent); border:1px solid var(--accent); border-radius:999px; padding:1px 8px; font-family:system-ui; flex:none}
-  .refchips{display:flex; flex-wrap:wrap; gap:7px 8px; align-items:baseline}
-  .refchips .ref{display:inline-flex; align-items:baseline; gap:6px}
-  .refchips code{background:var(--code-bg); padding:2px 8px; border-radius:5px; font-size:12px; white-space:nowrap}
-  .refchips .d{font-size:11.5px; color:var(--muted)}
-  @media (max-width:640px){
-    .refrow{grid-template-columns:1fr; gap:9px 0}
-    .reflabel .ct{margin-left:8px}
-  }
+  /* boundary — owns vs hands off */
+  .boundary{display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:20px}
+  .bcol{border:1px solid var(--line); border-radius:10px; padding:16px 18px; background:var(--panel)}
+  .bcol.own{border-left:3px solid var(--accent)}
+  .bcol.off{border-left:3px solid var(--glyph)}
+  .bcol h3{font-family:ui-monospace,Menlo,monospace; font-size:13.5px; margin:0 0 4px; display:flex; align-items:center; gap:8px}
+  .bcol.own h3{color:var(--accent)} .bcol.own h3 .lu{color:var(--accent)}
+  .bcol.off h3{color:var(--muted)} .bcol.off h3 .lu{color:var(--glyph)}
+  .bcol .sub{font-size:12.5px; color:var(--muted); margin:0 0 12px}
+  .bitems{list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:8px}
+  .bitems li{font-size:13.5px; line-height:1.4}
+  .bitems li b{font-family:ui-monospace,Menlo,monospace; font-weight:600; font-size:12.5px; color:var(--ink)}
+  .bitems.hand li b{color:var(--tok-dim)}
+  .bitems li .d{color:var(--muted)}
+  .bnote{margin-top:14px; font-size:13.5px; color:var(--muted); display:flex; gap:9px; line-height:1.55}
+  .bnote .lu{color:var(--accent); flex:none; margin-top:1px; width:17px; height:17px}
+  .bnote b{color:var(--ink)}
+  @media (max-width:640px){ .boundary{grid-template-columns:1fr} }
 
   /* tables */
   .tblwrap{overflow-x:auto; border:1px solid var(--line); border-radius:8px; margin-top:20px}
   table{border-collapse:collapse; width:100%; font-size:14px; background:var(--panel)}
   th{font-family:"Avenir Next Condensed","Arial Narrow",system-ui,sans-serif; text-transform:uppercase; letter-spacing:.08em; font-size:12.5px; font-weight:600; text-align:left; color:var(--muted); padding:10px 16px; border-bottom:1px solid var(--line)}
-  td{padding:10px 16px; border-bottom:1px solid var(--line); vertical-align:top}
+  td{padding:11px 16px; border-bottom:1px solid var(--line); vertical-align:top}
   tr:last-child td{border-bottom:none}
   td code{background:var(--code-bg); padding:1px 6px; border-radius:4px; font-size:12.5px; white-space:nowrap}
   td code a{color:inherit; text-decoration:none}
   td code a:hover{text-decoration:underline}
-  td.dim{font-weight:600; font-family:ui-monospace,Menlo,monospace; font-size:13px; color:var(--tok-dim); white-space:nowrap}
-  td .d{color:var(--muted)}
+  td.job{font-weight:600; color:var(--ink); line-height:1.4}
+  td .canon{color:var(--muted); font-size:12.5px; line-height:1.5}
+  td .canon b{color:var(--ink); font-weight:600}
+  td .prod{color:var(--muted); font-size:12.5px; line-height:1.45}
 
   .note{background:var(--amber-bg); border:1px solid var(--amber); border-radius:8px; padding:12px 16px; font-size:14px; margin-top:16px; max-width:none}
   .note b{color:var(--amber)}
 
-  /* rails — the laws */
+  /* default-stack band */
+  .stackgrid{margin-top:18px; display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:10px}
+  .stackgrp{border:1px solid var(--line); border-radius:9px; padding:12px 14px; background:var(--panel)}
+  .stackgrp h4{font-family:ui-monospace,Menlo,monospace; font-size:12px; margin:0 0 8px; color:var(--accent); letter-spacing:-.01em}
+  .stackgrp .cc{display:flex; flex-wrap:wrap; gap:5px}
+  .stackgrp .cc span{font-size:11.5px; color:var(--muted); background:var(--code-bg); border:1px solid var(--line); border-radius:5px; padding:2px 7px; line-height:1.4}
+  .stackgrp .cc span.def{color:var(--accent); border-color:var(--accent); font-weight:600}
+
+  /* surface overlays */
+  .overlays{display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:12px; margin-top:20px}
+  .ov{border:1px solid var(--line); border-radius:10px; padding:15px 17px; background:var(--panel)}
+  .ov.wedge{border-color:var(--accent); box-shadow:0 0 0 1px var(--accent) inset; background:linear-gradient(180deg,color-mix(in srgb,var(--accent) 6%,var(--panel)),var(--panel))}
+  .ov h3{font-family:ui-monospace,Menlo,monospace; font-size:14px; margin:0 0 3px; display:flex; align-items:center; gap:8px; color:var(--ink)}
+  .ov h3 .lu{color:var(--accent); width:16px; height:16px}
+  .ov .file{font-family:ui-monospace,Menlo,monospace; font-size:11px; color:var(--muted); margin-left:auto; font-weight:400}
+  .ov .reshape{font-size:13px; color:var(--muted); margin:6px 0 10px; line-height:1.5}
+  .ov .reshape b{color:var(--ink); font-weight:600}
+  .ov .lens{font-size:12px; color:var(--muted); border-top:1px solid var(--line); padding-top:9px; display:flex; gap:7px}
+  .ov .lens .k{font-family:"Avenir Next Condensed","Arial Narrow",system-ui,sans-serif; text-transform:uppercase; letter-spacing:.08em; font-weight:600; color:var(--accent); flex:none}
+  .ov.wedge .badge{display:inline-block; font-family:"Avenir Next Condensed","Arial Narrow",system-ui,sans-serif; text-transform:uppercase; letter-spacing:.08em; font-weight:600; font-size:10.5px; color:var(--accent-ink); background:var(--accent); border-radius:999px; padding:1px 9px; margin-left:auto}
+
+  /* agentic wedge deep block */
+  .wedgehead{background:var(--accent); color:var(--accent-ink); border-radius:10px 10px 0 0; padding:14px 20px; font-family:ui-monospace,Menlo,monospace; font-size:15px; font-weight:600; display:flex; align-items:center; gap:10px; margin-top:20px}
+  .wedgehead .lu{width:19px; height:19px}
+  .wedgebody{border:1px solid var(--accent); border-top:none; border-radius:0 0 10px 10px; padding:20px; background:var(--panel)}
+  .wedgegrid{display:grid; grid-template-columns:1.05fr 1fr; gap:18px}
+  @media (max-width:720px){ .wedgegrid{grid-template-columns:1fr} }
+  .harnessblock{background:var(--code-bg); border:1px solid var(--line); border-radius:8px; padding:14px 16px; font-family:ui-monospace,Menlo,monospace; font-size:12.5px; line-height:1.75; overflow-x:auto; white-space:pre; margin:0; min-width:0; max-width:100%}
+  .harnessblock .k{color:var(--tok-dim)}
+  .harnessblock .s{color:var(--accent)}
+  .harnessblock .c{color:var(--muted)}
+  .wcol h3{font-family:ui-monospace,Menlo,monospace; font-size:13px; margin:0 0 8px; color:var(--ink)}
+  .ladder{list-style:none; padding:0; margin:0 0 16px; display:flex; flex-direction:column; gap:6px}
+  .ladder li{font-size:12.5px; line-height:1.4; display:flex; gap:9px; align-items:baseline}
+  .ladder li .t{font-family:ui-monospace,Menlo,monospace; font-weight:600; font-size:12px; flex:none; width:120px; color:var(--ink)}
+  .ladder li .d{color:var(--muted)}
+  .ladder li.good .t{color:var(--good)} .ladder li.warn .t{color:var(--amber)} .ladder li.bad .t{color:var(--bad)}
+  .sharprule{margin-top:18px; background:var(--amber-bg); border:1px solid var(--amber); border-radius:8px; padding:13px 16px; font-size:13.5px; line-height:1.5}
+  .sharprule b{color:var(--amber)}
+  .sharprule .cc{display:flex; flex-wrap:wrap; gap:6px; margin-top:9px}
+  .sharprule .cc span{font-family:ui-monospace,Menlo,monospace; font-size:11.5px; color:var(--muted); background:var(--panel); border:1px solid var(--line); border-radius:5px; padding:2px 8px}
+
+  /* invariants — the spine */
   .rules{list-style:none; padding:0; margin:20px 0 0; display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:12px}
-  .rules li{background:var(--panel); border:1px solid var(--line); border-left:3px solid var(--amber); border-radius:6px; padding:12px 16px; font-size:14px; line-height:1.5}
-  .rules li b{display:flex; align-items:center; gap:7px; font-family:ui-monospace,Menlo,monospace; font-size:13px; margin-bottom:3px}
+  .rules li{background:var(--panel); border:1px solid var(--line); border-left:3px solid var(--amber); border-radius:6px; padding:12px 16px; font-size:13.5px; line-height:1.5}
+  .rules li b{display:flex; align-items:center; gap:7px; font-family:ui-monospace,Menlo,monospace; font-size:13px; margin-bottom:3px; color:var(--ink)}
   .rules li b .lu{width:15px; height:15px; color:var(--amber)}
-  /* if the laws list ends on an orphan cell, make the last item a full-width capstone
-     (title | text) so the wide card reads as a deliberate closing emphasis, not a gap */
   .rules li:last-child{grid-column:1 / -1; display:flex; align-items:baseline; gap:22px}
-  .rules li:last-child b{margin-bottom:0; flex:none; width:230px}
+  .rules li:last-child b{margin-bottom:0; flex:none; width:250px}
   @media (max-width:620px){ .rules li:last-child{flex-direction:column; gap:3px} .rules li:last-child b{width:auto} }
-  .loopback{display:flex; gap:10px; margin-top:12px; font-size:13.5px; color:var(--muted); line-height:1.55; max-width:none}
-  .loopback .ic{color:var(--accent); flex:none; margin-top:1px}
-  .loopback .ic .lu{width:17px; height:17px}
-  .loopback b{color:var(--ink)}
+
+  /* verification loop strip */
+  .vloop{display:flex; flex-wrap:wrap; align-items:stretch; gap:0; margin-top:20px; border:1px solid var(--line); border-radius:10px; overflow:hidden; background:var(--panel)}
+  .vstep{flex:1 1 0; min-width:120px; padding:14px 16px; border-right:1px solid var(--line); display:flex; flex-direction:column; gap:5px}
+  .vstep:last-child{border-right:none}
+  .vstep .n{font-family:ui-monospace,Menlo,monospace; font-size:11px; color:var(--glyph)}
+  .vstep .t{font-family:ui-monospace,Menlo,monospace; font-size:13.5px; color:var(--ink); font-weight:600; display:flex; align-items:center; gap:6px}
+  .vstep .t .ok{color:var(--good)}
+  .vstep .d{font-size:11.5px; color:var(--muted); line-height:1.4}
+  @media (max-width:640px){ .vstep{flex-basis:45%; border-right:1px solid var(--line)} }
+
+  /* artifacts grid */
+  .artgrid{display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:12px; margin-top:20px}
+  .art{border:1px solid var(--line); border-radius:10px; padding:15px 17px; background:var(--panel)}
+  .art h3{font-family:ui-monospace,Menlo,monospace; font-size:13.5px; margin:0 0 4px; display:flex; align-items:center; gap:8px; color:var(--ink)}
+  .art h3 .lu{color:var(--accent); width:16px; height:16px; flex:none}
+  .art .file{display:block; font-family:ui-monospace,Menlo,monospace; font-size:11px; color:var(--muted); margin:0 0 8px}
+  .art p{font-size:12.5px; color:var(--muted); margin:0; line-height:1.5; max-width:none}
+  .art p b{color:var(--ink); font-weight:600}
+
+  /* handoff seam */
+  .seam{display:grid; grid-template-columns:1fr auto 1fr; gap:0 18px; align-items:stretch; margin-top:20px}
+  .seambox{border:1px solid var(--line); border-radius:10px; padding:16px 18px; background:var(--panel)}
+  .seambox.mid{border-color:var(--accent); background:var(--code-bg)}
+  .seambox h3{font-family:ui-monospace,Menlo,monospace; font-size:13.5px; margin:0 0 8px; display:flex; align-items:center; gap:8px; color:var(--ink)}
+  .seambox h3 .lu{width:16px; height:16px; color:var(--accent)}
+  .seambox p{font-size:12.5px; color:var(--muted); margin:0; line-height:1.5; max-width:none}
+  .seamyaml{font-family:ui-monospace,Menlo,monospace; font-size:11.5px; line-height:1.7; color:var(--muted); margin:0; white-space:pre; overflow-x:auto; min-width:0; max-width:100%}
+  .seamyaml .k{color:var(--tok-dim)} .seamyaml .v{color:var(--ink)} .seamyaml .req{color:var(--accent)}
+  .seamarrows{display:flex; flex-direction:column; justify-content:center; gap:16px; color:var(--accent); font-family:ui-monospace,Menlo,monospace; font-size:22px}
+  .downstream{display:grid; grid-template-columns:1fr 1fr; gap:14px}
+  @media (max-width:760px){
+    .seam{grid-template-columns:1fr; gap:14px}
+    .seamarrows{flex-direction:row; justify-content:center; gap:40px}
+    .seamarrows span{transform:rotate(90deg)}
+    .downstream{grid-template-columns:1fr}
+  }
+  .seamnote{margin-top:14px; font-size:13.5px; color:var(--muted); display:flex; gap:9px; line-height:1.55}
+  .seamnote .lu{color:var(--accent); flex:none; margin-top:1px; width:17px; height:17px}
+  .seamnote b{color:var(--ink)}
 
   /* details / appendix */
   details.disc{background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:0; margin-top:14px}
@@ -196,150 +296,497 @@
   .files .hl{color:var(--accent); font-weight:600}
 
   footer{margin-top:72px; padding-top:20px; border-top:1px solid var(--line); font-size:13px; color:var(--muted); display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px}
-  /* iOS 26 chrome tint: Safari samples fixed edge elements; theme-color alone is ignored */
   .edge{position:fixed; left:0; right:0; height:8px; background:var(--bg); z-index:0; pointer-events:none}
   .edge.top{top:0} .edge.bottom{bottom:0}
-  @media (max-width:720px){
-    .prow{flex-direction:column; align-items:flex-start}
-    .prow .arr{transform:rotate(90deg); margin-left:18px}
-  }
 </style>
 </head>
 <body>
 <div class="edge top" aria-hidden="true"></div>
 <div class="edge bottom" aria-hidden="true"></div>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
-  <symbol id="lu-file-input" viewBox="0 0 24 24"><path d="M4 11V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.706.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-1"/><path d="M14 2v5a1 1 0 0 0 1 1h5"/><path d="M2 15h10"/><path d="m9 18 3-3-3-3"/></symbol>
+  <symbol id="lu-route" viewBox="0 0 24 24"><circle cx="6" cy="19" r="3"/><path d="M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H15"/><circle cx="18" cy="5" r="3"/></symbol>
+  <symbol id="lu-git-fork" viewBox="0 0 24 24"><circle cx="12" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><circle cx="18" cy="6" r="3"/><path d="M18 9v2c0 .6-.4 1-1 1H7c-.6 0-1-.4-1-1V9"/><path d="M12 12v3"/></symbol>
+  <symbol id="lu-server" viewBox="0 0 24 24"><rect width="20" height="8" x="2" y="2" rx="2" ry="2"/><rect width="20" height="8" x="2" y="14" rx="2" ry="2"/><line x1="6" x2="6.01" y1="6" y2="6"/><line x1="6" x2="6.01" y1="18" y2="18"/></symbol>
+  <symbol id="lu-server-cog" viewBox="0 0 24 24"><path d="M5 10H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-1"/><path d="M5 14H4a2 2 0 0 0-2 2v4a2 2 0 0 0 2 2h4"/><path d="M6 6h.01"/><path d="M6 18h.01"/><circle cx="15" cy="16" r="3"/><path d="M15 11v1"/><path d="M15 20v1"/><path d="M18.5 13.5l-.7.7"/><path d="M12.2 18.8l-.7.7"/><path d="M20 16h-1"/><path d="M11 16h-1"/><path d="M18.5 18.5l-.7-.7"/><path d="M12.2 13.2l-.7-.7"/></symbol>
+  <symbol id="lu-boxes" viewBox="0 0 24 24"><path d="M2.97 12.92A2 2 0 0 0 2 14.63v3.24a2 2 0 0 0 .97 1.71l3 1.8a2 2 0 0 0 2.06 0L12 19v-5.5l-5-3-4.03 2.42Z"/><path d="m7 16.5-4.74-2.85"/><path d="m7 16.5 5-3"/><path d="M7 16.5v5.17"/><path d="M12 13.5V19l3.97 2.38a2 2 0 0 0 2.06 0l3-1.8a2 2 0 0 0 .97-1.71v-3.24a2 2 0 0 0-.97-1.71L17 10.5l-5 3Z"/><path d="m17 16.5-5-3"/><path d="m17 16.5 4.74-2.85"/><path d="M17 16.5v5.17"/><path d="M7.97 4.42A2 2 0 0 0 7 6.13v4.37l5 3 5-3V6.13a2 2 0 0 0-.97-1.71l-3-1.8a2 2 0 0 0-2.06 0l-3 1.8Z"/><path d="M12 8 7.26 5.15"/><path d="m12 8 4.74-2.85"/><path d="M12 13.5V8"/></symbol>
+  <symbol id="lu-database" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5V19A9 3 0 0 0 21 19V5"/><path d="M3 12A9 3 0 0 0 21 12"/></symbol>
+  <symbol id="lu-key-round" viewBox="0 0 24 24"><path d="M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z"/><circle cx="16.5" cy="7.5" r=".5" fill="currentColor"/></symbol>
+  <symbol id="lu-repeat" viewBox="0 0 24 24"><path d="m17 2 4 4-4 4"/><path d="M3 11v-1a4 4 0 0 1 4-4h14"/><path d="m7 22-4-4 4-4"/><path d="M21 13v1a4 4 0 0 1-4 4H3"/></symbol>
+  <symbol id="lu-zap" viewBox="0 0 24 24"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/></symbol>
+  <symbol id="lu-shield" viewBox="0 0 24 24"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/></symbol>
   <symbol id="lu-shield-check" viewBox="0 0 24 24"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></symbol>
-  <symbol id="lu-scroll-text" viewBox="0 0 24 24"><path d="M15 12h-5"/><path d="M15 8h-5"/><path d="M19 17V5a2 2 0 0 0-2-2H4"/><path d="M8 21h12a2 2 0 0 0 2-2v-1a1 1 0 0 0-1-1H11a1 1 0 0 0-1 1v1a2 2 0 1 1-4 0V5a2 2 0 1 0-4 0v2a1 1 0 0 0 1 1h3"/></symbol>
-  <symbol id="lu-clipboard-list" viewBox="0 0 24 24"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></symbol>
-  <symbol id="lu-clipboard-check" viewBox="0 0 24 24"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="m9 14 2 2 4-4"/></symbol>
-  <symbol id="lu-search-check" viewBox="0 0 24 24"><path d="m8 11 2 2 4-4"/><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></symbol>
-  <symbol id="lu-file-output" viewBox="0 0 24 24"><path d="M4.226 20.925A2 2 0 0 0 6 22h12a2 2 0 0 0 2-2V8a2.4 2.4 0 0 0-.706-1.706l-3.588-3.588A2.4 2.4 0 0 0 14 2H6a2 2 0 0 0-2 2v3.127"/><path d="M14 2v5a1 1 0 0 0 1 1h5"/><path d="m5 11-3 3"/><path d="m5 17-3-3h10"/></symbol>
-  <symbol id="lu-files" viewBox="0 0 24 24"><path d="M15 2h-4a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V8"/><path d="M16.706 2.706A2.4 2.4 0 0 0 15 2v5a1 1 0 0 0 1 1h5a2.4 2.4 0 0 0-.706-1.706z"/><path d="M5 7a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h8a2 2 0 0 0 1.732-1"/></symbol>
-  <symbol id="lu-sliders-horizontal" viewBox="0 0 24 24"><path d="M10 5H3"/><path d="M12 19H3"/><path d="M14 3v4"/><path d="M16 17v4"/><path d="M21 12h-9"/><path d="M21 19h-5"/><path d="M21 5h-7"/><path d="M8 10v4"/><path d="M8 12H3"/></symbol>
-  <symbol id="lu-gauge" viewBox="0 0 24 24"><path d="m12 14 4-4"/><path d="M3.34 19a10 10 0 1 1 17.32 0"/></symbol>
-  <symbol id="lu-coins" viewBox="0 0 24 24"><path d="M13.744 17.736a6 6 0 1 1-7.48-7.48"/><path d="M15 6h1v4"/><path d="m6.134 14.768.866-.5 2 3.464"/><circle cx="16" cy="8" r="6"/></symbol>
-  <symbol id="lu-split" viewBox="0 0 24 24"><path d="M16 3h5v5"/><path d="M8 3H3v5"/><path d="M12 22v-8.3a4 4 0 0 0-1.172-2.872L3 3"/><path d="m15 9 6-6"/></symbol>
-  <symbol id="lu-copy-x" viewBox="0 0 24 24"><line x1="12" x2="18" y1="12" y2="18"/><line x1="12" x2="18" y1="18" y2="12"/><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></symbol>
-  <symbol id="lu-workflow" viewBox="0 0 24 24"><rect width="8" height="8" x="3" y="3" rx="2"/><path d="M7 11v4a2 2 0 0 0 2 2h4"/><rect width="8" height="8" x="13" y="13" rx="2"/></symbol>
+  <symbol id="lu-shield-alert" viewBox="0 0 24 24"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="M12 8v4"/><path d="M12 16h.01"/></symbol>
+  <symbol id="lu-webhook" viewBox="0 0 24 24"><path d="M18 16.98h-5.99c-1.1 0-1.95.94-2.48 1.9A4 4 0 0 1 2 17c.01-.7.2-1.4.57-2"/><path d="m6 17 3.13-5.78c.53-.97.1-2.18-.5-3.1a4 4 0 1 1 6.89-4.06"/><path d="m12 6 3.13 5.73C15.66 12.7 16.9 13 18 13a4 4 0 0 1 0 8"/></symbol>
+  <symbol id="lu-flask" viewBox="0 0 24 24"><path d="M14 2v6a2 2 0 0 0 .245.96l5.51 10.08A2 2 0 0 1 18 22H6a2 2 0 0 1-1.755-2.96l5.51-10.08A2 2 0 0 0 10 8V2"/><path d="M6.453 15h11.094"/><path d="M8.5 2h7"/></symbol>
+  <symbol id="lu-bot" viewBox="0 0 24 24"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></symbol>
   <symbol id="lu-layers" viewBox="0 0 24 24"><path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z"/><path d="m6.08 9.5-3.5 1.6a1 1 0 0 0 0 1.81l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9a1 1 0 0 0 0-1.83l-3.5-1.59"/><path d="m6.08 14.5-3.5 1.6a1 1 0 0 0 0 1.81l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9a1 1 0 0 0 0-1.83l-3.5-1.59"/></symbol>
-  <symbol id="lu-eye" viewBox="0 0 24 24"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/><circle cx="12" cy="12" r="3"/></symbol>
+  <symbol id="lu-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></symbol>
+  <symbol id="lu-cloud" viewBox="0 0 24 24"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/></symbol>
+  <symbol id="lu-radio-tower" viewBox="0 0 24 24"><path d="M4.9 16.1C1 12.2 1 5.8 4.9 1.9"/><path d="M7.8 4.7a6.14 6.14 0 0 0-.8 7.5"/><circle cx="12" cy="9" r="2"/><path d="M16.2 4.8c2 2 2.26 5.11.8 7.47"/><path d="M19.1 1.9a9.96 9.96 0 0 1 0 14.1"/><path d="M9.5 18h5"/><path d="m8 22 4-11 4 11"/></symbol>
+  <symbol id="lu-network" viewBox="0 0 24 24"><rect x="16" y="16" width="6" height="6" rx="1"/><rect x="2" y="16" width="6" height="6" rx="1"/><rect x="9" y="2" width="6" height="6" rx="1"/><path d="M5 16v-3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3"/><path d="M12 12V8"/></symbol>
+  <symbol id="lu-braces" viewBox="0 0 24 24"><path d="M8 3H7a2 2 0 0 0-2 2v5a2 2 0 0 1-2 2 2 2 0 0 1 2 2v5c0 1.1.9 2 2 2h1"/><path d="M16 21h1a2 2 0 0 0 2-2v-5c0-1.1.9-2 2-2a2 2 0 0 1-2-2V5a2 2 0 0 0-2-2h-1"/></symbol>
+  <symbol id="lu-download" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></symbol>
+  <symbol id="lu-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></symbol>
+  <symbol id="lu-arrow-left-right" viewBox="0 0 24 24"><path d="M8 3 4 7l4 4"/><path d="M4 7h16"/><path d="m16 21 4-4-4-4"/><path d="M20 17H4"/></symbol>
+  <symbol id="lu-list-checks" viewBox="0 0 24 24"><path d="m3 17 2 2 4-4"/><path d="m3 7 2 2 4-4"/><path d="M13 6h8"/><path d="M13 12h8"/><path d="M13 18h8"/></symbol>
+  <symbol id="lu-file-check" viewBox="0 0 24 24"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="m9 15 2 2 4-4"/></symbol>
+  <symbol id="lu-file-input" viewBox="0 0 24 24"><path d="M4 11V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.706.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-1"/><path d="M14 2v5a1 1 0 0 0 1 1h5"/><path d="M2 15h10"/><path d="m9 18 3-3-3-3"/></symbol>
+  <symbol id="lu-files" viewBox="0 0 24 24"><path d="M15 2h-4a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V8"/><path d="M16.706 2.706A2.4 2.4 0 0 0 15 2v5a1 1 0 0 0 1 1h5a2.4 2.4 0 0 0-.706-1.706z"/><path d="M5 7a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h8a2 2 0 0 0 1.732-1"/></symbol>
+  <symbol id="lu-scroll-text" viewBox="0 0 24 24"><path d="M15 12h-5"/><path d="M15 8h-5"/><path d="M19 17V5a2 2 0 0 0-2-2H4"/><path d="M8 21h12a2 2 0 0 0 2-2v-1a1 1 0 0 0-1-1H11a1 1 0 0 0-1 1v1a2 2 0 1 1-4 0V5a2 2 0 1 0-4 0v2a1 1 0 0 0 1 1h3"/></symbol>
+  <symbol id="lu-split" viewBox="0 0 24 24"><path d="M16 3h5v5"/><path d="M8 3H3v5"/><path d="M12 22v-8.3a4 4 0 0 0-1.172-2.872L3 3"/><path d="m15 9 6-6"/></symbol>
+  <symbol id="lu-tag" viewBox="0 0 24 24"><path d="M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z"/><circle cx="7.5" cy="7.5" r=".5" fill="currentColor"/></symbol>
+  <symbol id="lu-gauge" viewBox="0 0 24 24"><path d="m12 14 4-4"/><path d="M3.34 19a10 10 0 1 1 17.32 0"/></symbol>
+  <symbol id="lu-workflow" viewBox="0 0 24 24"><rect width="8" height="8" x="3" y="3" rx="2"/><path d="M7 11v4a2 2 0 0 0 2 2h4"/><rect width="8" height="8" x="13" y="13" rx="2"/></symbol>
+  <symbol id="lu-terminal" viewBox="0 0 24 24"><path d="m4 17 6-6-6-6"/><path d="M12 19h8"/></symbol>
 </svg>
 <div class="wrap">
 <header>
-  <div class="eyebrow">TODO: an agent skill · one short descriptor chip</div>
+  <div class="eyebrow">an agent skill · APIs, data, auth, async, caching, security &amp; tests</div>
   <nav class="toplinks" aria-label="external links">
     <a href="https://github.com/gabros20/backend-skill" target="_blank" rel="noopener">GitHub</a>
     <a href="https://github.com/gabros20/backend-skill#install" target="_blank" rel="noopener">Install</a>
     <a href="/llms.txt">llms.txt</a>
   </nav>
   <h1><span class="sl">/</span>backend</h1>
-  <p class="lede">TODO sentence 1 — the generic, forgettable result an agent produces without this
-  skill. TODO sentence 2 — what backend replaces that with, ending on Build the server: APIs, data, auth, and background jobs.</p>
-  <div class="term" style="margin-top:22px"><span class="c"># that's the whole start</span>
-<span class="p">/backend</span> TODO — the shortest real ask that would trigger this skill</div>
+  <p class="lede">Ask an agent for an endpoint and it writes plausible handler code from memory —
+  a stale ORM call, an ad-hoc error shape, auth improvised, a job that drops on retry. <b>backend</b>
+  builds the <i>running server behind the contract</i> — APIs, domain logic, OLTP persistence, auth,
+  async work, caching, security controls, integration, and the tests that prove it — retrieval-first
+  against current docs, picking the modal default stack and saying when to deviate, and proving it
+  runs before it calls the job done.</p>
+  <div class="term" style="margin-top:22px"><span class="c"># natural language — no flags, no fixed pipeline</span>
+<span class="p">/backend</span> build the refund endpoint — validation, idempotent worker &amp; auth, then prove it runs</div>
   <p class="hosts"><span class="hl">runs on</span><span class="ref">Claude Code</span><span>Codex</span><span>Cursor</span><span>Antigravity</span><span>opencode</span><span>Grok Build</span><span>Hermes</span></p>
   <nav class="secnav" aria-label="page sections">
-    <a href="#arc">the arc</a><a href="#laws">the laws</a><a href="#pick">pick by job</a>
-    <a href="#refs">reference map</a><a href="#start">start here</a>
+    <a href="#mission">mission</a><a href="#router">the router</a><a href="#jobs">by job</a>
+    <a href="#stack">default stack</a><a href="#surfaces">surfaces</a><a href="#agentic">agentic</a>
+    <a href="#laws">invariants</a><a href="#artifacts">artifacts</a><a href="#handoff">handoff</a><a href="#start">start here</a>
   </nav>
-</header>
 
-<section id="arc">
-  <h2><svg class="lu" aria-hidden="true"><use href="#lu-workflow"/></svg>The workflow arc</h2>
-  <p>TODO: state the arc here — how many stages/strategies, and whether the agent can enter at
-  any point or must run it start to finish.</p>
   <div class="vidwrap" id="vidwrap"></div>
   <!-- render from remotion/, see remotion/README -->
-  <div class="poster" role="img" aria-label="TODO: describe the diagram this poster stands in for.">
-    <p class="arcline"><b>TODO stage 1</b> <span class="ar">→</span> <b>TODO stage 2</b> <span class="ar">→</span> <b>TODO stage 3</b></p>
+  <div class="herofallback router" role="img" aria-label="The faceted router: before generating any framework code the skill fetches current docs, then one primary job (build the API) composes with at most one base surface (serverless / edge) and the additive agentic overlay to resolve to the smallest sufficient reference set — three files, read fully, out of fifteen.">
+    <div class="gate"><svg class="lu" aria-hidden="true"><use href="#lu-download"/></svg><span><b>Retrieval-first gate</b> — before any framework/ORM/DB code, fetch the current official docs and version-gate the idioms. Backends ship breaking changes fast.</span></div>
+    <div class="rlane">
+      <div class="rlabel">① primary job<small>exactly one</small></div>
+      <div class="chips">
+        <span class="chip on">api</span><span class="chip">domain</span><span class="chip">persistence</span>
+        <span class="chip">auth</span><span class="chip">async</span><span class="chip">caching</span>
+        <span class="chip">security</span><span class="chip">integration</span><span class="chip">testing</span>
+      </div>
+    </div>
+    <div class="rlane">
+      <div class="rlabel">② base surface<small>at most one</small></div>
+      <div class="chips">
+        <span class="chip">rest-crud</span><span class="chip on">serverless-edge</span>
+        <span class="chip">realtime</span><span class="chip">event-driven</span>
+      </div>
+    </div>
+    <div class="rlane">
+      <div class="rlabel">③ agentic overlay<small>additive ⭐</small></div>
+      <div class="chips">
+        <span class="chip dimon">surface-agentic</span><span class="chip" style="border-style:dashed">stacks on top — never replaces</span>
+      </div>
+    </div>
+    <div class="rdown"><span>compose →</span></div>
+    <div class="readset">
+      <code>api-implementation.md</code><code>surface-serverless-edge.md</code><code>surface-agentic.md</code>
+      <span class="cnt"><b>3 of 15</b> loaded · read fully</span>
+    </div>
+    <p class="rrule"><svg class="lu" aria-hidden="true"><use href="#lu-route"/></svg><span><b>Route before acting.</b> Pick one job and at most one base surface, read only those references — never the whole library. When the caller is an LLM/agent, <code>surface-agentic</code> stacks additively on top of the base surface, because it changes the control plane, the contract's legibility, and the token model.</span></p>
   </div>
-  <p class="pcap">TODO: note which stages (if any) also stand alone, entered without the rest of the arc.</p>
+  <p class="pcap"><b>The router is the skill.</b> There is no fixed pipeline to run start-to-finish —
+  each job stands alone and enters where your request is. The animation traces one path; the sections
+  below map the whole surface it routes across.</p>
+</header>
 
-  <div class="steps">
-    <div><b><svg class="lu" aria-hidden="true"><use href="#lu-sliders-horizontal"/></svg>TODO stage 1</b><span>TODO one-line job for this stage. → <code>references/example.md</code></span></div>
-    <div><b><svg class="lu" aria-hidden="true"><use href="#lu-files"/></svg>TODO stage 2</b><span>TODO one-line job for this stage.</span></div>
-    <div><b><svg class="lu" aria-hidden="true"><use href="#lu-file-output"/></svg>TODO stage 3</b><span>TODO one-line job for this stage.</span></div>
+<section id="mission">
+  <h2><svg class="lu" aria-hidden="true"><use href="#lu-git-fork"/></svg>Own the code, not the decision</h2>
+  <p>backend owns the <i>running server</i> — the implementation craft inside the decided shape:
+  the endpoints behind the contract, the domain layer, the OLTP schema and migrations, the auth
+  enforcement, the queues and workers, the caches and the security controls, plus the tests that
+  prove it runs. It consumes <b>architecture</b>'s decisions — boundaries, contract shape, NFR budgets,
+  threat model — and builds inside them rather than re-deriving or overriding them, and it recommends
+  the sibling skills by name rather than silently doing their work.</p>
+  <div class="boundary">
+    <div class="bcol own">
+      <h3><svg class="lu" aria-hidden="true"><use href="#lu-shield-check"/></svg>backend owns</h3>
+      <p class="sub">the running implementation &amp; the decision record behind it</p>
+      <ul class="bitems">
+        <li><b>the API</b> <span class="d">— routing, validation, error shape, pagination, versioning-in-code</span></li>
+        <li><b>domain + persistence</b> <span class="d">— use-cases, aggregates, schema, migrations, transactions</span></li>
+        <li><b>auth enforcement</b> <span class="d">— sessions/JWT, OAuth2/OIDC+PKCE, Argon2id, RBAC/ABAC/ReBAC</span></li>
+        <li><b>async + integration</b> <span class="d">— jobs, outbox, saga, idempotency, resilient clients, webhooks</span></li>
+        <li><b>security controls</b> <span class="d">— the threat model's controls, implemented &amp; self-audited</span></li>
+        <li><b>the proof</b> <span class="d">— unit / integration / contract tests + a run verification loop</span></li>
+      </ul>
+    </div>
+    <div class="bcol off">
+      <h3><svg class="lu" aria-hidden="true"><use href="#lu-git-fork"/></svg>hands off to</h3>
+      <p class="sub">consume or contribute; own none</p>
+      <ul class="bitems hand">
+        <li><b>architecture</b> <span class="d">— upstream: boundaries, contract shape, NFR budget, threat model</span></li>
+        <li><b>frontend</b> <span class="d">— the client/SSR building to the same contract</span></li>
+        <li><b>data</b> <span class="d">— OLAP, warehouses, pipelines, analytical stores</span></li>
+        <li><b>ai</b> <span class="d">— the LLM/agent core; backend serves it, doesn't own it</span></li>
+        <li><b>operate</b> <span class="d">— deploy, CI/CD, runtime monitoring &amp; SLO alerting</span></li>
+        <li><b>quality</b> <span class="d">— independent load-testing, scanning &amp; the release gate</span></li>
+      </ul>
+    </div>
   </div>
-  <div class="loopback"><span class="ic"><svg class="lu" aria-hidden="true"><use href="#lu-shield-check"/></svg></span><span>TODO: state the loop-back rule, if this skill has a review/QA gate that can send work back through an earlier stage.</span></div>
+  <p class="bnote"><svg class="lu" aria-hidden="true"><use href="#lu-shield-alert"/></svg><span><b>Implement inside the decision.</b> When compatible upstream artifacts are supplied — a solution-architecture doc, contracts, an NFR budget, a threat model, a <code>handoff.yaml</code> — backend builds against them. When they don't exist (a standalone run), it says so explicitly rather than inventing a contract or threat model to fill the gap.</span></p>
+</section>
+
+<section id="router">
+  <h2><svg class="lu" aria-hidden="true"><use href="#lu-route"/></svg>The faceted router</h2>
+  <p>SKILL.md is a router, not a script. Every request selects the smallest sufficient route:
+  <b>one primary job</b> — the nine below — combined with <b>at most one base surface</b> that reshapes
+  how the job applies to the runtime, plus the <b>additive agentic overlay</b> when the caller is an
+  LLM/agent system. Read the selected references completely; load two or three at most, never the whole
+  pack. Nine jobs and five surfaces compose across the runtime types — from a single-endpoint two-file
+  read to a full service pass — without ever reading all fifteen references at once.</p>
+  <div class="tblwrap"><table>
+    <tr><th>facet</th><th>options</th><th>rule</th></tr>
+    <tr>
+      <td class="job">① Primary job</td>
+      <td class="prod">api · domain-logic · persistence · auth · async &amp; messaging · caching &amp; performance · server-security · service-integration · backend-testing</td>
+      <td class="canon"><b>Exactly one.</b> Pick the single engineering job the request needs; the default entry is api-implementation.</td>
+    </tr>
+    <tr>
+      <td class="job">② Base surface</td>
+      <td class="prod">rest-crud <span style="color:var(--muted)">(default)</span> · serverless / edge · realtime · event-driven microservices</td>
+      <td class="canon"><b>At most one.</b> The runtime/system type reshapes how every job applies — it points to the job references, it doesn't redefine them.</td>
+    </tr>
+    <tr>
+      <td class="job">③ Agentic overlay <span style="color:var(--amber)">⭐</span></td>
+      <td class="prod"><span style="color:var(--tok-dim);font-weight:600">surface-agentic</span> — backend serving an LLM/agent system</td>
+      <td class="canon"><b>Additive.</b> Stacks <i>on top of</i> the base surface, never replaces it. A serverless agent backend is serverless-edge <b>+</b> agentic.</td>
+    </tr>
+  </table></div>
+  <div class="note"><b>Retrieval-first before any code.</b> Backend frameworks, ORMs, and databases ship
+  breaking changes fast — Prisma 7, Drizzle 1.0, Go 1.22 routing, Kafka 4.0 KRaft-only, Redis
+  licensing, PG18/19. A route never generates framework/ORM/DB-specific code from memory; it fetches
+  the current official docs and types and version-gates the idioms to the target release first.</div>
+</section>
+
+<section id="jobs">
+  <h2><svg class="lu" aria-hidden="true"><use href="#lu-files"/></svg>The nine primary jobs</h2>
+  <p>Each job is one reference, read fully only when its route is selected — grounded in named canon,
+  producing a running implementation plus the decision record behind it. This is the whole surface,
+  not a headline slice.</p>
+  <div class="tblwrap"><table>
+    <tr><th>I need to…</th><th>Read</th><th>Grounded in</th><th>Produces</th></tr>
+    <tr>
+      <td class="job"><svg class="lu" aria-hidden="true" style="color:var(--accent)"><use href="#lu-server"/></svg> Build endpoints / handlers / resolvers behind a contract · pick REST/GraphQL/gRPC/tRPC · set pagination, versioning, error shape</td>
+      <td><code><a href="https://github.com/gabros20/backend-skill/blob/main/skills/backend/references/api-implementation.md">api-implementation.md</a></code></td>
+      <td class="canon"><b>OpenAPI</b> · Google <b>AIP</b> · MS REST guidelines · cursor pagination</td>
+      <td class="prod">Transport pick, request-lifecycle wiring, single-source schema, uniform error shape, cursor pagination, in-code versioning</td>
+    </tr>
+    <tr>
+      <td class="job"><svg class="lu" aria-hidden="true" style="color:var(--accent)"><use href="#lu-boxes"/></svg> Add / refactor business logic, a service or use-case layer, or domain models · stop rules leaking into handlers</td>
+      <td><code><a href="https://github.com/gabros20/backend-skill/blob/main/skills/backend/references/domain-logic.md">domain-logic.md</a></code></td>
+      <td class="canon"><b>DDD</b> tactical · clean / hexagonal (Cockburn) · dependency rule</td>
+      <td class="prod">Layered domain/application/infra structure, aggregates/entities/VOs, anti-anemic litmus, dependency rule</td>
+    </tr>
+    <tr>
+      <td class="job"><svg class="lu" aria-hidden="true" style="color:var(--accent)"><use href="#lu-database"/></svg> Design schema / indexes · choose ORM vs raw SQL · write a migration · get transactions / isolation right · size a pool · kill N+1</td>
+      <td><code><a href="https://github.com/gabros20/backend-skill/blob/main/skills/backend/references/persistence.md">persistence.md</a></code></td>
+      <td class="canon"><b>Postgres</b>-for-everything · Drizzle / Prisma · isolation levels · pooling</td>
+      <td class="prod">Schema + index + expand/contract migration, isolation decision, pooling matched to runtime, DB-license flag</td>
+    </tr>
+    <tr>
+      <td class="job"><svg class="lu" aria-hidden="true" style="color:var(--accent)"><use href="#lu-key-round"/></svg> Add login / sessions · protect a route · add OAuth / SSO / "sign in with X" · store passwords · decide who-can-do-what</td>
+      <td><code><a href="https://github.com/gabros20/backend-skill/blob/main/skills/backend/references/auth.md">auth.md</a></code></td>
+      <td class="canon"><b>OAuth2 / OIDC</b> + PKCE (RFC 9700) · <b>Argon2id</b> · Better-Auth · Zanzibar (OpenFGA / SpiceDB)</td>
+      <td class="prod">Session-vs-JWT decision, OAuth2/OIDC+PKCE flow, Argon2id config, RBAC/ABAC/ReBAC model + library pick</td>
+    </tr>
+    <tr>
+      <td class="job"><svg class="lu" aria-hidden="true" style="color:var(--accent)"><use href="#lu-repeat"/></svg> Background jobs, queues, workers, event-driven services, pub/sub, CDC, outbox, saga, idempotency, or durable workflows</td>
+      <td><code><a href="https://github.com/gabros20/backend-skill/blob/main/skills/backend/references/async-and-messaging.md">async-and-messaging.md</a></code></td>
+      <td class="canon">transactional <b>outbox</b> · <b>saga</b> · at-least-once + idempotent consumers · <b>Temporal / Hatchet</b></td>
+      <td class="prod">Broker/queue pick, idempotency-key path, transactional outbox, saga + compensations, delivery stance, durable-execution decision</td>
+    </tr>
+    <tr>
+      <td class="job"><svg class="lu" aria-hidden="true" style="color:var(--accent)"><use href="#lu-zap"/></svg> Add a cache and invalidate it · implement rate limiting · diagnose a slow endpoint / query</td>
+      <td><code><a href="https://github.com/gabros20/backend-skill/blob/main/skills/backend/references/caching-and-performance.md">caching-and-performance.md</a></code></td>
+      <td class="canon">cache-aside / staleness tolerance · distributed <b>token bucket</b> · measure-first tuning</td>
+      <td class="prod">Cache strategy by staleness/loss tolerance, invalidation mechanism, distributed-correct token bucket, measured bottleneck + fix</td>
+    </tr>
+    <tr>
+      <td class="job"><svg class="lu" aria-hidden="true" style="color:var(--accent)"><use href="#lu-shield"/></svg> Secure the API · add security headers · fix CORS · prevent injection · store secrets · add CSRF / mTLS — implement a threat model's controls</td>
+      <td><code><a href="https://github.com/gabros20/backend-skill/blob/main/skills/backend/references/server-security.md">server-security.md</a></code></td>
+      <td class="canon"><b>OWASP</b> Top 10:2021 · <b>ASVS</b> · parameterized queries · secret hygiene</td>
+      <td class="prod">Uniform OWASP controls table (control→impl→verify) with a self-audit count, mapped to Top 10:2021 / ASVS</td>
+    </tr>
+    <tr>
+      <td class="job"><svg class="lu" aria-hidden="true" style="color:var(--accent)"><use href="#lu-webhook"/></svg> Call a third-party API · receive / deliver webhooks · add a gRPC / HTTP client · tune a circuit breaker · integrate payment / AI / email</td>
+      <td><code><a href="https://github.com/gabros20/backend-skill/blob/main/skills/backend/references/service-integration.md">service-integration.md</a></code></td>
+      <td class="canon">retry + jitter · <b>circuit breaker</b> · idempotent webhooks in/out · signature verify</td>
+      <td class="prod">Resilient client wrapper (retry reused from async + circuit breaker), verified idempotent webhooks in and out</td>
+    </tr>
+    <tr>
+      <td class="job"><svg class="lu" aria-hidden="true" style="color:var(--accent)"><use href="#lu-flask"/></svg> Write / run / fix backend tests, or "prove this works" — unit / integration (testcontainers) / producer-contract + a runnable loop</td>
+      <td><code><a href="https://github.com/gabros20/backend-skill/blob/main/skills/backend/references/backend-testing.md">backend-testing.md</a></code></td>
+      <td class="canon"><b>testcontainers</b> · producer-contract (Pact) · test pyramid · real dependencies</td>
+      <td class="prod">Layered test suite, real-dependency integration tests, contract-producer check, ✓/✗ verification report</td>
+    </tr>
+  </table></div>
+  <p style="margin-top:12px">Full router table &amp; invariants: <a href="https://github.com/gabros20/backend-skill/blob/main/skills/backend/SKILL.md#route-before-acting">SKILL.md</a>.</p>
+</section>
+
+<section id="stack">
+  <h2><svg class="lu" aria-hidden="true"><use href="#lu-server-cog"/></svg>Default stack, then deviate</h2>
+  <p>The skill speaks the current modal default per language fluently — so the fast path is fast — but
+  every recommendation is a <b>concrete pick + what NOT to build + the trade-off</b>, weighted by
+  reversibility. Adoption numbers are engagement, not gospel; the fundamentals below are anchored
+  regardless of what is trending. Highlighted chips are the modal defaults.</p>
+  <div class="stackgrid">
+    <div class="stackgrp"><h4>TypeScript</h4><div class="cc"><span class="def">Hono / tRPC</span><span>Fastify</span><span>Elysia (Bun)</span><span class="def">managed Postgres</span><span>Drizzle</span><span>Prisma 7</span><span class="def">Better-Auth</span></div></div>
+    <div class="stackgrp"><h4>Python</h4><div class="cc"><span class="def">FastAPI</span><span>SQLAlchemy / SQLModel</span><span>Alembic</span></div></div>
+    <div class="stackgrp"><h4>Go</h4><div class="cc"><span class="def">net/http (1.22)</span><span>sqlc</span><span>pgx</span></div></div>
+    <div class="stackgrp"><h4>Postgres-for-everything</h4><div class="cc"><span>pgvector</span><span>LISTEN / NOTIFY</span><span>jobs + SKIP LOCKED</span><span>full-text / BM25</span></div></div>
+    <div class="stackgrp"><h4>Durable execution</h4><div class="cc"><span class="def">Temporal</span><span>Hatchet (Postgres)</span></div></div>
+    <div class="stackgrp"><h4>Zanzibar authz</h4><div class="cc"><span>OpenFGA</span><span>SpiceDB</span><span>ory-keto</span></div></div>
+    <div class="stackgrp"><h4>Anchored fundamentals</h4><div class="cc"><span>SQL before ORM</span><span>modular-monolith-first</span><span>at-least-once + idempotent</span><span>parameterized queries</span></div></div>
+    <div class="stackgrp"><h4>DB-license literacy</h4><div class="cc"><span>SSPL · BSL · AGPL</span><span>source-available</span><span>Valkey / OpenSearch escape hatches</span></div></div>
+  </div>
+  <div class="note"><b>Teach the datastore license, not just the API.</b> A distinctive value-add: the
+  skill states the self-host / resale implications of <b>SSPL</b> (MongoDB, Redis-server), <b>BSL</b>
+  (CockroachDB, Timescale-features), <b>AGPL</b> (Redis 8), and source-available tiers — and names the
+  permissive escape hatches (Valkey, OpenSearch, YugabyteDB, Meilisearch-MIT).</div>
+</section>
+
+<section id="surfaces">
+  <h2><svg class="lu" aria-hidden="true"><use href="#lu-layers"/></svg>Five surface overlays</h2>
+  <p>One base surface, at most, reshapes the job for the runtime type — the same persistence job is
+  bounded differently on a long-running server than on a scale-to-zero edge function. The agentic
+  overlay is <b>additive</b> — it stacks on top of whichever base you picked — and is the first-class
+  differentiator, expanded below.</p>
+  <div class="overlays">
+    <div class="ov">
+      <h3><svg class="lu" aria-hidden="true"><use href="#lu-globe"/></svg>REST / CRUD <span class="file">surface-rest-crud.md</span></h3>
+      <p class="reshape">Standard long-running request/response service (the default): the
+      <b>concern-scoping model</b> pick, an adapter seam that isolates the runtime, per-language idioms,
+      and a 12-factor scaffold.</p>
+      <p class="lens"><span class="k">reshapes</span>scoping model · adapter seam · 12-factor</p>
+    </div>
+    <div class="ov">
+      <h3><svg class="lu" aria-hidden="true"><use href="#lu-cloud"/></svg>Serverless / edge <span class="file">surface-serverless-edge.md</span></h3>
+      <p class="reshape">Workers / Lambda / Bun-edge: statelessness, the recurring
+      <b>connection-pooling failure mode</b> (a txn-mode pooler or an HTTP-native driver), and the
+      D1 / KV / R2 / Durable-Objects mapping.</p>
+      <p class="lens"><span class="k">reshapes</span>statelessness · pooling · edge stores</p>
+    </div>
+    <div class="ov">
+      <h3><svg class="lu" aria-hidden="true"><use href="#lu-radio-tower"/></svg>Realtime <span class="file">surface-realtime.md</span></h3>
+      <p class="reshape">WebSocket / SSE / pub-sub, stateful connections, presence, rooms: the
+      <b>SSE-vs-WS</b> transport call, actor-per-connection/room, per-message reliability, and
+      fan-out / scaling.</p>
+      <p class="lens"><span class="k">reshapes</span>transport · actor model · fan-out</p>
+    </div>
+    <div class="ov">
+      <h3><svg class="lu" aria-hidden="true"><use href="#lu-network"/></svg>Event-driven micro <span class="file">surface-event-driven-microservices.md</span></h3>
+      <p class="reshape">Independently deployed polyglot services over gRPC + an event backbone: the
+      <b>modular-monolith-first gate</b>, database-per-service consequences (saga / CQRS), inter-service
+      contract evolution, sync-vs-async classification.</p>
+      <p class="lens"><span class="k">reshapes</span>monolith gate · db-per-service · contracts</p>
+    </div>
+    <div class="ov wedge">
+      <h3><svg class="lu" aria-hidden="true"><use href="#lu-bot"/></svg>Agentic / LLM <span class="badge">flagship · additive</span></h3>
+      <p class="reshape">Backend serving an LLM/agent system. <b>Durable execution</b> as the default
+      control plane, tool / MCP endpoints, agent-legible typed contracts + errors, RAG plumbing (not the
+      core), agent-scoped short-lived tokens — it stacks on top of the base surface.</p>
+      <p class="lens"><span class="k">reshapes</span>control plane · tool/MCP · agent tokens</p>
+    </div>
+  </div>
+</section>
+
+<section id="agentic">
+  <h2><svg class="lu" aria-hidden="true"><use href="#lu-bot"/></svg>The agentic flagship</h2>
+  <p>Generic server-building is well covered; <b>the agent-native backend is the 2026 throughline</b>.
+  Every major backend tool now ships an agent interface, and the argument that backends should be
+  <i>agent-legible</i> — typed contracts, legible errors, markdown, token-efficient responses — is the
+  differentiator versus every single-purpose backend skill. When the caller is an agent, the surface
+  stacks additively: it changes the control plane, not just a component.</p>
+  <div class="wedgehead"><svg class="lu" aria-hidden="true"><use href="#lu-shield-check"/></svg>Durable execution is the default control plane — and the contract is written to be read by a model.</div>
+  <div class="wedgebody">
+    <div class="wedgegrid">
+      <div>
+        <h3>An additive surface, not a new backend</h3>
+<pre class="harnessblock"><span class="c"># the base surface stays; agentic stacks on top</span>
+<span class="k">base_surface</span>:   <span class="s">serverless-edge</span>   <span class="c"># rest-crud | serverless | realtime | event-driven</span>
+<span class="k">control_plane</span>:  <span class="s">durable execution</span> <span class="c"># Temporal / Hatchet — resume, don't retry-from-zero</span>
+<span class="k">tool_surface</span>:   <span class="s">MCP + typed tool endpoints</span>
+<span class="k">contract</span>:       <span class="s">agent-legible</span>      <span class="c"># typed I/O, legible errors, token-efficient</span>
+<span class="k">retrieval</span>:      <span class="s">RAG plumbing</span>       <span class="c"># backend serves it; ai owns the core</span>
+<span class="k">tokens</span>:         <span class="s">agent-scoped, short-lived</span>
+<span class="k">idempotency</span>:    <span class="s">every tool call keyed</span>  <span class="c"># retries are a given, not an edge case</span></pre>
+      </div>
+      <div class="wcol">
+        <h3>Why durability is the default here</h3>
+        <ul class="ladder">
+          <li class="good"><span class="t">durable</span><span class="d">workflow state survives a crash — resume mid-run, the agent default</span></li>
+          <li class="warn"><span class="t">retry-from-zero</span><span class="d">stateless retry — fine for a pure function, ruinous for a 20-step agent run</span></li>
+          <li class="bad"><span class="t">fire-and-hope</span><span class="d">no durability — "Ignoring Durability in Agent Workflows" is a flagged anti-pattern</span></li>
+        </ul>
+        <h3>The backend serves the agent — it isn't the agent</h3>
+        <ul class="ladder">
+          <li><span class="t">tool / MCP</span><span class="d">typed, discoverable, individually authorized endpoints</span></li>
+          <li><span class="t">RAG plumbing</span><span class="d">indexing, retrieval, reranking wiring — not the model</span></li>
+          <li><span class="t">agent tokens</span><span class="d">short-lived, tool-scoped; blast radius before autonomy</span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="sharprule"><b>The sharp distinction:</b> <code>surface-agentic</code> is <i>additive</i>,
+    never a replacement — a realtime agent backend is <code>surface-realtime</code> <b>+</b>
+    <code>surface-agentic</code>. Backend owns the plumbing that <i>serves</i> the agent (tool endpoints,
+    durable control plane, RAG wiring, scoped tokens); the LLM/agent <i>core</i> — prompts, model
+    choice, the eval set — belongs to <code>ai</code>. Agent-specific concerns are first-class:
+      <div class="cc"><span>durable resume</span><span>tool-scope over-grant</span><span>prompt injection via tool I/O</span><span>token / cost runaway</span><span>idempotent tool calls</span></div>
+    </div>
+  </div>
 </section>
 
 <section id="laws">
-  <h2><svg class="lu" aria-hidden="true"><use href="#lu-shield-check"/></svg>The non-negotiable laws</h2>
-  <p>These govern everything in the references below — the load-bearing ones, condensed.</p>
+  <h2><svg class="lu" aria-hidden="true"><use href="#lu-shield-check"/></svg>The universal invariants</h2>
+  <p>Six rules govern every route, whichever references it loads — the behavioral spine, condensed.</p>
   <ul class="rules">
-    <li><b><svg class="lu" aria-hidden="true"><use href="#lu-layers"/></svg>TODO law 1</b>TODO one to two sentences.</li>
-    <li><b><svg class="lu" aria-hidden="true"><use href="#lu-sliders-horizontal"/></svg>TODO law 2</b>TODO one to two sentences.</li>
-    <li><b><svg class="lu" aria-hidden="true"><use href="#lu-gauge"/></svg>TODO law 3</b>TODO one to two sentences, as a full-width capstone if it's the closing rule.</li>
+    <li><b><svg class="lu" aria-hidden="true"><use href="#lu-git-fork"/></svg>Implement inside the decision</b>Own the running server, not the boundary / contract-shape / NFR-budget / threat-model decision (→ architecture), OLAP / pipelines (→ data), the LLM/agent core (→ ai), deploy / CI / monitoring (→ operate), or the independent gate (→ quality). Consume upstream artifacts; when they don't exist, say so rather than inventing one.</li>
+    <li><b><svg class="lu" aria-hidden="true"><use href="#lu-download"/></svg>Retrieval-first / anti-staleness</b>Backend frameworks, ORMs, and DBs ship breaking changes fast (Prisma 7, Drizzle 1.0, Go 1.22 routing, Kafka 4.0, Redis licensing). Before generating any framework/ORM/DB-specific code, fetch the current official docs and types and version-gate the idioms — never rely on memorized APIs for a fast-moving target.</li>
+    <li><b><svg class="lu" aria-hidden="true"><use href="#lu-server-cog"/></svg>Default-stack, then deviate</b>Name the current modal default per stack, but every recommendation is a concrete pick + what NOT to build + the trade-off, weighted by reversibility. Anchor the fundamentals (SQL-before-ORM, modular-monolith-first, at-least-once + idempotent). Cap each pass at 3–5 decisions.</li>
+    <li><b><svg class="lu" aria-hidden="true"><use href="#lu-list-checks"/></svg>Exhaustive checklists are tables</b>Any "cover N items" task — OWASP controls, the API-contract review, a 12-factor audit, ASVS mapping — is a uniform table with a self-audit count, never a narrative. A narrative pass reliably drops rows and stops before full coverage.</li>
+    <li><b><svg class="lu" aria-hidden="true"><use href="#lu-flask"/></svg>Prove it works before done</b>Ship the verification loop (lint → migrate → test → hit the endpoint → diff-review) as the completion gate, reporting ✓/✗ per phase — distinct from quality's independent gate. Never assert it from memory.</li>
+    <li><b><svg class="lu" aria-hidden="true"><use href="#lu-tag"/></svg>Distinguish facts, decisions, assumptions &amp; proposals</b>Preserve upstream decisions and user constraints, or flag the conflict explicitly; prefer repository and artifact evidence over generic defaults; single-home every canonical fact (idempotency mechanics, OAuth flows, isolation levels) and state unknowns as TBD rather than inventing a value.</li>
   </ul>
 </section>
 
-<section id="pick">
-  <h2><svg class="lu" aria-hidden="true"><use href="#lu-clipboard-list"/></svg>Pick by job</h2>
-  <p>The SKILL.md is a router — load only the reference your current job needs. A condensed cut of the full table:</p>
-  <div class="tblwrap"><table>
-    <tr><th>I need to…</th><th>Read</th></tr>
-    <tr><td>TODO job 1</td><td><code><a href="https://github.com/gabros20/backend-skill/blob/main/skills/backend/references/example.md">example.md</a></code></td></tr>
-    <tr><td>TODO job 2</td><td><code><a href="https://github.com/gabros20/backend-skill/blob/main/skills/backend/references/example.md">example.md</a></code></td></tr>
-  </table></div>
-  <p style="margin-top:12px">Full table: <a href="https://github.com/gabros20/backend-skill/blob/main/skills/backend/SKILL.md#route-before-acting">SKILL.md</a>.</p>
-  <div class="note"><b>Complementary, not duplicated:</b> TODO — name the adjacent skills this one hands off to instead of duplicating.</div>
+<section id="artifacts">
+  <h2><svg class="lu" aria-hidden="true"><use href="#lu-file-check"/></svg>What a pass produces</h2>
+  <p>backend's deliverable is a running implementation plus the decision record behind it. A full pass
+  emits up to five kinds of artifact — plus the fillable checklists that ship in the pack. Each records
+  the decision and options considered, the trade-off accepted, facts/decisions/assumptions
+  distinguished, and — for any framework/ORM/DB code — that current docs were checked for the target
+  version. It closes on the prove-it-works loop, not an assertion.</p>
+  <div class="vloop" aria-label="the prove-it-works verification loop">
+    <div class="vstep"><span class="n">phase 1</span><span class="t"><svg class="lu ok" aria-hidden="true"><use href="#lu-file-check"/></svg>lint</span><span class="d">types + static checks pass</span></div>
+    <div class="vstep"><span class="n">phase 2</span><span class="t"><svg class="lu ok" aria-hidden="true"><use href="#lu-database"/></svg>migrate</span><span class="d">expand/contract applies clean</span></div>
+    <div class="vstep"><span class="n">phase 3</span><span class="t"><svg class="lu ok" aria-hidden="true"><use href="#lu-flask"/></svg>test</span><span class="d">unit + integration + contract</span></div>
+    <div class="vstep"><span class="n">phase 4</span><span class="t"><svg class="lu ok" aria-hidden="true"><use href="#lu-server"/></svg>hit endpoint</span><span class="d">real request, real response</span></div>
+    <div class="vstep"><span class="n">phase 5</span><span class="t"><svg class="lu ok" aria-hidden="true"><use href="#lu-list-checks"/></svg>diff-review</span><span class="d">✓/✗ reported per phase</span></div>
+  </div>
+  <div class="artgrid">
+    <div class="art">
+      <h3><svg class="lu" aria-hidden="true"><use href="#lu-server"/></svg>The running service</h3>
+      <span class="file">assets/backend-service-scaffold.md</span>
+      <p>A 12-factor service scaffold — <b>the implementation, not a plan</b> — wired to the chosen runtime and store.</p>
+    </div>
+    <div class="art">
+      <h3><svg class="lu" aria-hidden="true"><use href="#lu-braces"/></svg>The contract, as implemented</h3>
+      <span class="file">assets/api-contract-review-checklist.md</span>
+      <p>The contract backend built to, reviewed against a uniform checklist — <b>the interface frontend codes against</b>.</p>
+    </div>
+    <div class="art">
+      <h3><svg class="lu" aria-hidden="true"><use href="#lu-database"/></svg>Zero-downtime migration</h3>
+      <span class="file">assets/migration-template.md</span>
+      <p>Expand/contract migration with the rollout order — <b>applied and verified</b>, not just written.</p>
+    </div>
+    <div class="art">
+      <h3><svg class="lu" aria-hidden="true"><use href="#lu-key-round"/></svg>Auth &amp; OWASP checklists</h3>
+      <span class="file">auth-implementation · owasp-backend-controls</span>
+      <p>Argon2id params, cookie flags, OAuth-PKCE, and the OWASP controls table — <b>uniform, with a self-audit count</b>.</p>
+    </div>
+    <div class="art">
+      <h3><svg class="lu" aria-hidden="true"><use href="#lu-repeat"/></svg>Idempotency &amp; outbox recipes</h3>
+      <span class="file">assets/idempotency-and-outbox-recipes.md</span>
+      <p>The keyed-request path and the transactional outbox — <b>at-least-once made safe</b> for jobs and webhooks.</p>
+    </div>
+    <div class="art">
+      <h3><svg class="lu" aria-hidden="true"><use href="#lu-flask"/></svg>Tests + verification loop</h3>
+      <span class="file">assets/verification-loop-template.md</span>
+      <p>The layered suite plus the ✓/✗ report and CI YAML — <b>the proof it runs</b>, distinct from quality's gate.</p>
+    </div>
+  </div>
 </section>
 
-<section id="refs">
-  <h2><svg class="lu" aria-hidden="true"><use href="#lu-files"/></svg>Reference map</h2>
-  <p>TODO: how many references, grouped by the stage/strategy they serve. Every one is copy-pasteable rather than abstract — the whole point of the router is that you never read all of them at once.</p>
-  <dl class="refmap">
-    <div class="refrow">
-      <dt class="reflabel"><svg class="lu" aria-hidden="true"><use href="#lu-sliders-horizontal"/></svg>TODO stage 1<span class="ct">1</span></dt>
-      <dd class="refchips"><span class="ref"><code>example.md</code></span></dd>
+<section id="handoff">
+  <h2><svg class="lu" aria-hidden="true"><use href="#lu-git-fork"/></svg>The handoff seam</h2>
+  <p>backend consumes <b>architecture</b>'s artifacts upstream — contracts, NFR budgets, threat model,
+  ADRs — and, when downstream build/verify work is expected, emits a compact <code>handoff.yaml</code>
+  beside the running code: a routing <i>index</i> into the services, contracts-as-built, tests, and
+  telemetry hooks, never a copy of them. Standalone by default; the companion appears only when a
+  consumer will actually read it.</p>
+  <div class="seam">
+    <div class="seambox">
+      <h3><svg class="lu" aria-hidden="true"><use href="#lu-file-check"/></svg>backend builds</h3>
+<pre class="seamyaml"><span class="k">skill</span>: <span class="v">backend</span>
+<span class="k">status</span>: <span class="v">complete</span>
+<span class="req">objective</span>: <span class="v">""</span>   <span style="color:var(--glyph)"># only required field</span>
+<span class="k">artifacts_created</span>: <span class="v">[service, contract,</span>
+  <span class="v">migrations, tests, telemetry-hooks]</span>
+<span class="k">decisions</span>: · <span class="k">assumptions</span>: · <span class="k">constraints</span>:
+<span class="k">verification</span>: <span class="v">lint/migrate/test/hit ✓</span>
+<span class="k">security_border</span>: <span class="v">controls impl'd vs</span>
+  <span class="v">quality-verified</span>
+<span class="k">recommended_next</span>: <span class="v">operate · quality</span>
+  <span class="v">· frontend · data · ai</span></pre>
     </div>
-  </dl>
-  <p style="margin-top:16px">Browse the full set: <a href="https://github.com/gabros20/backend-skill/tree/main/skills/backend/references">skills/backend/references/</a>.</p>
+    <div class="seamarrows"><span>→</span><span>→</span></div>
+    <div class="downstream">
+      <div class="seambox mid">
+        <h3><svg class="lu" aria-hidden="true"><use href="#lu-workflow"/></svg>operate · quality</h3>
+        <p>The running services with telemetry hooks to deploy and monitor, and backend's own tests plus the security-control border for the independent load-test, scan, and release gate.</p>
+      </div>
+      <div class="seambox mid">
+        <h3><svg class="lu" aria-hidden="true"><use href="#lu-braces"/></svg>frontend · data · ai</h3>
+        <p>The contract-as-implemented to code the client against, the OLTP shape that feeds pipelines, and the tool/MCP endpoints plus RAG plumbing that serve the agent core.</p>
+      </div>
+    </div>
+  </div>
+  <p class="seamnote"><svg class="lu" aria-hidden="true"><use href="#lu-shield-alert"/></svg><span><b>Seam discipline.</b> The running code and its tests are the real deliverables; if a consumer needs more than the index gives, the artifact itself is incomplete — the yaml never grows to compensate. When a threat model was consumed, the border between backend-implemented controls and quality-verified controls is stated explicitly. Never silently invoke a build skill; name it in <code>recommended_next</code>.</span></p>
 </section>
 
 <section id="start">
   <h2><svg class="lu" aria-hidden="true"><use href="#lu-file-input"/></svg>Start here</h2>
-  <p>Install once. It's a plain <code>SKILL.md</code> router — no flags, no config, no scripts —
-  so it activates on natural-language phrasing (TODO: a couple of real trigger examples) rather
-  than a fixed command.</p>
-  <div class="term"><span class="c"># skills.sh ecosystem</span>
-npx skills add gabros20/backend-skill
+  <p>Install once. It's a plain <code>SKILL.md</code> router — no flags, no config, no scripts — so it
+  activates on natural-language phrasing ("build the endpoint", "add auth", "write a migration", "set
+  up a job queue", "harden the API", "expose an MCP endpoint") rather than a fixed command.</p>
+  <div class="term"><span class="c"># skills.sh ecosystem (installs globally to supported clients)</span>
+npx skills add gabros20/backend-skill -g -y
 
 <span class="c"># clone + installer (per-host targets)</span>
-git clone https://github.com/gabros20/backend-skill && cd backend-skill
-./install.sh codex   <span class="c"># or: claude | agents | cursor | antigravity | opencode | grok | hermes | all</span>
+git clone https://github.com/gabros20/backend-skill &amp;&amp; cd backend-skill
+./install.sh codex   <span class="c"># or: claude | cursor | antigravity | opencode | grok | hermes | agents | all</span>
 
-<span class="c"># use</span>
-<span class="p">/backend</span> TODO — a real, short invocation example
-<span class="p">/backend</span> TODO — a second real, short invocation example</div>
+<span class="c"># use — natural language, any host</span>
+<span class="p">/backend</span> add OAuth login with PKCE and an RBAC check on the admin routes
+<span class="p">/backend</span> expose our refund flow as an MCP tool on a durable worker   <span class="c"># → serverless-edge + agentic</span>
+<span class="p">/backend</span> write the migration and prove it applies with zero downtime</div>
   <p style="margin-top:14px">The same install runs on any <a href="https://agentskills.io">Agent&nbsp;Skills</a>
-  host. Codex installs to <code>${CODEX_HOME:-$HOME/.codex}/skills</code>; <code>agents</code>
-  remains a separate cross-agent installation target.</p>
+  host. Codex installs to <code>${CODEX_HOME:-$HOME/.codex}/skills</code> and triggers with
+  <code>$backend</code>; <code>agents</code> remains a separate cross-agent installation target.</p>
   <details class="disc">
     <summary>install targets by host</summary>
     <div>
       <div class="tblwrap"><table>
         <tr><th>host</th><th>install target</th><th>command</th></tr>
-        <tr><td class="dim">Claude Code</td><td><code>~/.claude/skills</code></td><td><code>./install.sh claude</code></td></tr>
-        <tr><td class="dim">Codex</td><td><code>${CODEX_HOME:-$HOME/.codex}/skills</code></td><td><code>./install.sh codex</code></td></tr>
-        <tr><td class="dim">Cross-agent path</td><td><code>~/.agents/skills</code></td><td><code>./install.sh agents</code></td></tr>
-        <tr><td class="dim">Cursor CLI</td><td><code>~/.cursor/skills</code></td><td><code>./install.sh cursor</code></td></tr>
-        <tr><td class="dim">Antigravity (IDE + agy)</td><td><code>~/.gemini/…/skills</code></td><td><code>./install.sh antigravity</code></td></tr>
-        <tr><td class="dim">opencode</td><td><code>~/.config/opencode/skills</code></td><td><code>./install.sh opencode</code></td></tr>
-        <tr><td class="dim">Grok Build</td><td><code>~/.grok/skills</code></td><td><code>./install.sh grok</code></td></tr>
-        <tr><td class="dim">Hermes</td><td><code>~/.hermes/skills</code></td><td><code>./install.sh hermes</code></td></tr>
+        <tr><td class="job">Claude Code</td><td><code>~/.claude/skills</code></td><td><code>./install.sh claude</code></td></tr>
+        <tr><td class="job">Codex</td><td><code>${CODEX_HOME:-$HOME/.codex}/skills</code></td><td><code>./install.sh codex</code></td></tr>
+        <tr><td class="job">Cross-agent path</td><td><code>~/.agents/skills</code></td><td><code>./install.sh agents</code></td></tr>
+        <tr><td class="job">Cursor CLI</td><td><code>~/.cursor/skills</code></td><td><code>./install.sh cursor</code></td></tr>
+        <tr><td class="job">Antigravity (IDE + agy)</td><td><code>~/.gemini/…/skills</code></td><td><code>./install.sh antigravity</code></td></tr>
+        <tr><td class="job">opencode</td><td><code>~/.config/opencode/skills</code></td><td><code>./install.sh opencode</code></td></tr>
+        <tr><td class="job">Grok Build</td><td><code>~/.grok/skills</code></td><td><code>./install.sh grok</code></td></tr>
+        <tr><td class="job">Hermes</td><td><code>~/.hermes/skills</code></td><td><code>./install.sh hermes</code></td></tr>
       </table></div>
-      <p style="margin-top:12px">Prefer <code>npx skills add gabros20/backend-skill</code> when you have Node — it maps supported clients itself.</p>
+      <p style="margin-top:12px">Prefer <code>npx skills add gabros20/backend-skill -g -y</code> when you have Node — it maps supported clients itself.</p>
     </div>
   </details>
   <details class="disc">
     <summary>what's in the repo</summary>
     <div>
-      <div class="files"><span class="hl">skills/backend/</span>          <span class="d">the skill: SKILL.md (router) + references/</span>
+      <div class="files"><span class="hl">skills/backend/</span>           <span class="d">the skill: SKILL.md (router) + 15 references/ + assets/</span>
 <span class="hl">docs/</span>                      <span class="d">installation · usage · recipes</span>
-<span class="hl">site/</span>                      <span class="d">optional guide — deploys to backend-skill.vercel.app</span>
+<span class="hl">site/</span>                      <span class="d">this guide — deploys to backend-skill.vercel.app</span>
 install.sh                 <span class="d">installer (claude | codex | cursor | antigravity | opencode | grok | hermes | agents | all)</span>
 README.md · CHANGELOG.md · LICENSE</div>
       <p>More docs: <a href="https://github.com/gabros20/backend-skill/blob/main/docs/installation.md">docs/installation.md</a> ·
@@ -350,17 +797,16 @@ README.md · CHANGELOG.md · LICENSE</div>
 </section>
 
 <footer>
-  <span><span class="mono">/backend</span> — Build the server: APIs, data, auth, and background jobs</span>
+  <span><span class="mono">/backend</span> — build the server behind the contract.</span>
   <span><a href="https://github.com/gabros20/backend-skill">github.com/gabros20/backend-skill</a> · <a href="/llms.txt">llms.txt</a> · MIT</span>
 </footer>
 </div>
 <script>
 (function () {
-  // Progressive enhancement over the static .arcline fallback above: swaps in the
-  // hero Remotion video (light/dark). On any load error it removes the
-  // slot and leaves the static arc line in place.
+  // Progressive enhancement over the static router fallback above: swaps in the hero Remotion
+  // video (light/dark). On any load error it removes the slot, leaving the static router in place.
   if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-  if (innerWidth < 720) return; // the static line reads better on phones
+  if (innerWidth < 720) return; // the static router reads better on phones
   var wrap = document.getElementById("vidwrap");
   if (!wrap || !document.createElement("video").canPlayType) return;
   var mq = matchMedia("(prefers-color-scheme: dark)");
@@ -370,7 +816,7 @@ README.md · CHANGELOG.md · LICENSE</div>
   v.autoplay = true;
   v.playsInline = true;
   v.setAttribute("playsinline", "");
-  v.setAttribute("aria-label", "TODO: describe what the hero animation shows.");
+  v.setAttribute("aria-label", "The backend skill in motion: a request arrives, the retrieval-first gate fetches current docs, the faceted router composes one primary job with at most one base surface plus the additive agentic overlay, the agentic flagship shows durable execution and agent-legible contracts, a full pass produces a running service with migrations, auth, tests and telemetry hooks, and a handoff.yaml hands the build off to operate, quality, frontend, data and ai.");
   v.addEventListener("loadeddata", function () { document.body.classList.add("has-vid"); });
   v.addEventListener("error", function () { wrap.remove(); });
   function apply() {
