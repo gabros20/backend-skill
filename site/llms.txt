@@ -61,4 +61,4 @@ Assets (`skills/backend/assets/`): backend-service-scaffold.md (12-factor) · mi
 
 ## Optional
 
-- [Visual guide](https://backend-skill.vercel.app): the router, jobs, surfaces, invariants, artifacts, and handoff seam on one page.
+- [Visual guide](https://backendengskill.vercel.app): the router, jobs, surfaces, invariants, artifacts, and handoff seam on one page.

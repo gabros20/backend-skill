@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://backend-skill.vercel.app/sitemap.xml
+Sitemap: https://backendengskill.vercel.app/sitemap.xml
