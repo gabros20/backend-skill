@@ -1,6 +1,6 @@
 {
   "name": "backend-skill",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "Build the server: APIs, data, auth, and background jobs",
   "author": {
     "name": "gabros20",
@@ -9,17 +9,17 @@
   "homepage": "https://backend-skill.vercel.app",
   "repository": "https://github.com/gabros20/backend-skill",
   "license": "MIT",
-  "keywords": ["agent-skill", "backend"],
+  "keywords": ["agent-skill", "backend", "backend-development", "api", "server", "database", "authentication", "message-queue"],
   "skills": "./skills/",
   "interface": {
     "displayName": "Backend Engineering",
     "shortDescription": "Build the server: APIs, data, auth, and background jobs",
-    "longDescription": "Build the server: APIs, data, auth, and background jobs",
+    "longDescription": "Implement the production server behind the contract — API endpoints, domain logic, OLTP persistence, auth, async jobs and messaging, caching, security controls, integrations, and the tests that prove it runs — across REST, GraphQL, gRPC, realtime, serverless/edge, and agentic systems in Node, Python, Go, Rust, or the JVM. A faceted router: pick one engineering job and at most one runtime surface (agentic stacks additively), retrieval-first and default-stack-then-deviate. Implements inside architecture's decisions; hands running services to operate and its tests to quality.",
     "developerName": "gabros20",
     "category": "Productivity",
     "capabilities": [],
     "defaultPrompt": [
-      "Use $backend to TODO: provide one short starter request."
+      "Use $backend to implement the server behind this contract: endpoints, persistence, auth, and the tests that prove it works."
     ],
     "brandColor": "#059669"
   }

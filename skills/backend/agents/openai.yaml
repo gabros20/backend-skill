@@ -1,6 +1,6 @@
 interface:
   display_name: "Backend Engineering"
   short_description: "Build the server: APIs, data, auth, and background jobs"
-  default_prompt: "Use $backend to TODO: provide one short, realistic starting request."
+  default_prompt: "Use $backend to implement the server behind the contract: pick the engineering job and runtime surface, then build endpoints, persistence, auth, async, and the tests that prove it works."
 policy:
   allow_implicit_invocation: true

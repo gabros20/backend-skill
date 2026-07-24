@@ -1,7 +1,37 @@
 [
   {
-    "id": "representative-ablation",
-    "prompt": "TODO: add a request that exercises a load-bearing instruction.",
+    "id": "retains-rfc9700-refresh-rotation",
+    "prompt": "Add a login flow with JWT access tokens and refresh tokens to our API.",
+    "variants": ["no-skill", "current", "compressed-candidate"],
+    "preserve": ["task success", "safety", "artifact completeness", "required-reference recall"]
+  },
+  {
+    "id": "retains-outbox-same-transaction",
+    "prompt": "Make sure our order-confirmation event reliably reaches the message broker even if the process crashes right after the DB write.",
+    "variants": ["no-skill", "current", "compressed-candidate"],
+    "preserve": ["task success", "safety", "artifact completeness", "required-reference recall"]
+  },
+  {
+    "id": "retains-isolation-level-portability-trap",
+    "prompt": "Write the transaction for our balance-transfer endpoint so concurrent transfers can't corrupt the account balance.",
+    "variants": ["no-skill", "current", "compressed-candidate"],
+    "preserve": ["task success", "safety", "artifact completeness", "required-reference recall"]
+  },
+  {
+    "id": "retains-distributed-rate-limit-correctness",
+    "prompt": "Add rate limiting to our public API. We run multiple instances behind a load balancer.",
+    "variants": ["no-skill", "current", "compressed-candidate"],
+    "preserve": ["task success", "safety", "artifact completeness", "required-reference recall"]
+  },
+  {
+    "id": "retains-full-jitter-backoff",
+    "prompt": "Add retry logic to our client that calls a flaky third-party shipping API.",
+    "variants": ["no-skill", "current", "compressed-candidate"],
+    "preserve": ["task success", "safety", "artifact completeness", "required-reference recall"]
+  },
+  {
+    "id": "retains-serverless-connection-pooling-trap",
+    "prompt": "We're moving this API to Cloudflare Workers. It currently talks to Postgres with a normal connection pool.",
     "variants": ["no-skill", "current", "compressed-candidate"],
     "preserve": ["task success", "safety", "artifact completeness", "required-reference recall"]
   }

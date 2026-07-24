@@ -1,8 +1,162 @@
 [
   {
-    "id": "primary-route",
-    "prompt": "TODO: add a request that selects one reference.",
-    "expected_references": ["references/example.md"],
-    "forbidden_references": []
+    "id": "api-implementation-crud-endpoint",
+    "prompt": "Build a REST endpoint for creating and listing orders, including pagination for the list view and a stated versioning scheme.",
+    "expected_references": ["references/api-implementation.md"],
+    "forbidden_references": [
+      "references/domain-logic.md",
+      "references/auth.md",
+      "references/persistence.md"
+    ]
+  },
+  {
+    "id": "domain-logic-anemic-refactor",
+    "prompt": "Our order handler has business rules baked directly into it — refactor into a proper use-case/entity layer so the rules don't leak into the controller.",
+    "expected_references": ["references/domain-logic.md"],
+    "forbidden_references": [
+      "references/api-implementation.md",
+      "references/persistence.md",
+      "references/async-and-messaging.md"
+    ]
+  },
+  {
+    "id": "persistence-migration-isolation",
+    "prompt": "Write a zero-downtime migration to split a shared users table, and pick the right transaction isolation level for the balance-transfer path.",
+    "expected_references": ["references/persistence.md"],
+    "forbidden_references": [
+      "references/caching-and-performance.md",
+      "references/async-and-messaging.md",
+      "references/domain-logic.md"
+    ]
+  },
+  {
+    "id": "auth-oauth-password-hashing",
+    "prompt": "Add login with email/password and Google OAuth to our API, including how we hash and store the passwords.",
+    "expected_references": ["references/auth.md"],
+    "forbidden_references": [
+      "references/server-security.md",
+      "references/service-integration.md",
+      "references/async-and-messaging.md"
+    ]
+  },
+  {
+    "id": "async-outbox-idempotency",
+    "prompt": "Set up a background job queue with an idempotency-key path and a transactional outbox for order events.",
+    "expected_references": ["references/async-and-messaging.md"],
+    "forbidden_references": [
+      "references/service-integration.md",
+      "references/persistence.md",
+      "references/caching-and-performance.md"
+    ]
+  },
+  {
+    "id": "caching-invalidation-rate-limit",
+    "prompt": "Add a cache in front of our product-catalog reads and implement rate limiting that stays correct across our multiple app instances.",
+    "expected_references": ["references/caching-and-performance.md"],
+    "forbidden_references": [
+      "references/persistence.md",
+      "references/async-and-messaging.md",
+      "references/server-security.md"
+    ]
+  },
+  {
+    "id": "server-security-owasp-audit",
+    "prompt": "Audit this API against the OWASP Top 10 and fix our CORS, CSRF, and security-header gaps.",
+    "expected_references": ["references/server-security.md"],
+    "forbidden_references": [
+      "references/auth.md",
+      "references/caching-and-performance.md",
+      "references/service-integration.md"
+    ]
+  },
+  {
+    "id": "service-integration-webhook-client",
+    "prompt": "Build a resilient client for a third-party shipping API with retries and a circuit breaker, and verify the signatures on their inbound webhooks.",
+    "expected_references": ["references/service-integration.md"],
+    "forbidden_references": [
+      "references/async-and-messaging.md",
+      "references/auth.md",
+      "references/caching-and-performance.md"
+    ]
+  },
+  {
+    "id": "backend-testing-verification-loop",
+    "prompt": "Write integration tests against a real Postgres testcontainer for our persistence layer and set up the prove-it-works verification loop.",
+    "expected_references": ["references/backend-testing.md"],
+    "forbidden_references": [
+      "references/persistence.md",
+      "references/domain-logic.md",
+      "references/api-implementation.md"
+    ]
+  },
+  {
+    "id": "serverless-surface-plus-api-job",
+    "prompt": "We're building the checkout API for Cloudflare Workers — implement the endpoints and handle the DB connection pooling correctly for that runtime.",
+    "expected_references": ["references/api-implementation.md", "references/surface-serverless-edge.md"],
+    "forbidden_references": [
+      "references/surface-realtime.md",
+      "references/surface-agentic.md",
+      "references/surface-event-driven-microservices.md"
+    ]
+  },
+  {
+    "id": "realtime-surface-chat",
+    "prompt": "Build the WebSocket backend for our live chat rooms, including presence indicators and reconnect handling.",
+    "expected_references": ["references/surface-realtime.md"],
+    "forbidden_references": [
+      "references/surface-serverless-edge.md",
+      "references/surface-event-driven-microservices.md",
+      "references/auth.md"
+    ]
+  },
+  {
+    "id": "event-driven-surface-plus-async-job",
+    "prompt": "We're splitting billing out into its own deployable that talks to the rest of the system over gRPC and Kafka — implement the inter-service contract and the event consumers.",
+    "expected_references": ["references/surface-event-driven-microservices.md", "references/async-and-messaging.md"],
+    "forbidden_references": [
+      "references/surface-realtime.md",
+      "references/surface-agentic.md",
+      "references/domain-logic.md"
+    ]
+  },
+  {
+    "id": "agentic-additive-on-rest-crud",
+    "prompt": "We're building a multi-tenant SaaS backend that's also the backend for our AI agent's tool calls — implement the API and the MCP tool endpoints.",
+    "expected_references": ["references/surface-rest-crud.md", "references/surface-agentic.md"],
+    "forbidden_references": [
+      "references/surface-serverless-edge.md",
+      "references/surface-realtime.md",
+      "references/surface-event-driven-microservices.md"
+    ]
+  },
+  {
+    "id": "agentic-additive-on-serverless",
+    "prompt": "Deploy our agent's tool backend to Cloudflare Workers, exposing MCP endpoints for retrieval over our knowledge base.",
+    "expected_references": ["references/surface-serverless-edge.md", "references/surface-agentic.md"],
+    "forbidden_references": [
+      "references/surface-rest-crud.md",
+      "references/surface-realtime.md",
+      "references/surface-event-driven-microservices.md"
+    ]
+  },
+  {
+    "id": "contract-consumption-with-handoff",
+    "prompt": "Architecture already produced the API contract, NFR budget, and threat model for the payments service. Implement the endpoints and the controls the threat model calls out, and hand off to quality for independent verification.",
+    "expected_references": ["references/api-implementation.md", "references/server-security.md", "references/handoff.md"],
+    "forbidden_references": [
+      "references/persistence.md",
+      "references/async-and-messaging.md",
+      "references/surface-agentic.md"
+    ]
+  },
+  {
+    "id": "standalone-no-handoff",
+    "prompt": "This one migration is failing in production — just get the orders table back to a good state.",
+    "expected_references": ["references/persistence.md"],
+    "forbidden_references": [
+      "references/handoff.md",
+      "references/surface-agentic.md",
+      "references/async-and-messaging.md"
+    ]
   }
 ]

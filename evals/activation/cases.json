@@ -1,12 +1,112 @@
 [
   {
-    "id": "positive-explicit",
-    "prompt": "Use $backend to TODO: add a realistic in-scope request.",
+    "id": "positive-api-implementation",
+    "prompt": "Implement this REST endpoint in our Express app and wire it up to the existing controller, matching the OpenAPI contract we already have.",
     "should_trigger": true
   },
   {
-    "id": "negative-near-miss",
-    "prompt": "TODO: add a realistic request owned by the closest neighboring skill.",
+    "id": "positive-domain-logic",
+    "prompt": "Our order-service handlers are accumulating business rules directly — refactor this into a proper service/use-case layer so the rules live in one place.",
+    "should_trigger": true
+  },
+  {
+    "id": "positive-persistence-migration",
+    "prompt": "Write a migration to add a new column to the orders table and backfill it in batches without downtime.",
+    "should_trigger": true
+  },
+  {
+    "id": "positive-auth-login",
+    "prompt": "Add a login flow with JWT access tokens and 'sign in with Google' OAuth to our Express API, including how we store the passwords.",
+    "should_trigger": true
+  },
+  {
+    "id": "positive-async-outbox",
+    "prompt": "Set up a background job queue with a transactional outbox so our order-confirmation emails never get silently dropped on a crash.",
+    "should_trigger": true
+  },
+  {
+    "id": "positive-caching-rate-limit",
+    "prompt": "Add Redis-based rate limiting to our public API so no single API key can exceed 100 requests/min across our instances.",
+    "should_trigger": true
+  },
+  {
+    "id": "positive-security-owasp",
+    "prompt": "Harden this API against the OWASP Top 10 — fix our CORS config, add security headers, and make sure every query is parameterized.",
+    "should_trigger": true
+  },
+  {
+    "id": "positive-webhook-integration",
+    "prompt": "Build a webhook receiver for Stripe payment events — verify the signature and handle retries idempotently.",
+    "should_trigger": true
+  },
+  {
+    "id": "positive-backend-testing",
+    "prompt": "Write integration tests for our persistence layer using testcontainers and set up a lint-to-test verification loop we can run before every PR.",
+    "should_trigger": true
+  },
+  {
+    "id": "positive-surface-serverless",
+    "prompt": "We're deploying this checkout API to Cloudflare Workers — implement the endpoints and make sure our Postgres connection handling won't blow up under concurrent invocations.",
+    "should_trigger": true
+  },
+  {
+    "id": "positive-surface-realtime",
+    "prompt": "Build the WebSocket backend for our live chat feature — rooms, presence, and reconnect handling.",
+    "should_trigger": true
+  },
+  {
+    "id": "positive-surface-event-driven",
+    "prompt": "We're splitting the billing service out to talk to the rest of the system over gRPC and Kafka — implement the inter-service contract and the event consumers.",
+    "should_trigger": true
+  },
+  {
+    "id": "positive-surface-agentic-mcp",
+    "prompt": "Expose our inventory backend as an MCP server so our AI agent can query stock levels and place restock orders as tool calls.",
+    "should_trigger": true
+  },
+  {
+    "id": "positive-tricky-llm-call",
+    "prompt": "Call our LLM provider's completion API from the backend, with retries and a circuit breaker for when the provider is down.",
+    "should_trigger": true
+  },
+  {
+    "id": "negative-architecture-system-design",
+    "prompt": "Design the system boundaries and bounded contexts for our new order-management platform from scratch.",
+    "should_trigger": false
+  },
+  {
+    "id": "negative-architecture-contract-design",
+    "prompt": "Define the API contract for the payments service — endpoints, versioning, and a deprecation plan for the old v1 routes.",
+    "should_trigger": false
+  },
+  {
+    "id": "negative-architecture-threat-model",
+    "prompt": "Threat-model the new multi-tenant admin console and decide the auth/authz model and tenant isolation strategy.",
+    "should_trigger": false
+  },
+  {
+    "id": "negative-frontend-ui",
+    "prompt": "Build the React component for the new pricing table using our existing design tokens.",
+    "should_trigger": false
+  },
+  {
+    "id": "negative-data-etl",
+    "prompt": "Build an ETL pipeline that moves order events into our analytics warehouse nightly.",
+    "should_trigger": false
+  },
+  {
+    "id": "negative-ai-rag-core",
+    "prompt": "Design the RAG retrieval strategy — chunking, reranking, and the eval harness — for our support bot.",
+    "should_trigger": false
+  },
+  {
+    "id": "negative-operate-cicd",
+    "prompt": "Set up the CI/CD pipeline for this repo and get it deploying to staging on every merge to main.",
+    "should_trigger": false
+  },
+  {
+    "id": "negative-quality-load-test",
+    "prompt": "Run a load test against the checkout service and report where it falls over.",
     "should_trigger": false
   }
 ]

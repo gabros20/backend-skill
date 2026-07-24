@@ -1,0 +1,70 @@
+# backend → operate/quality/frontend/data/ai handoff envelope
+# Fill every field for a real run; delete these comments once filled.
+# Only `objective` is required — every other field may be empty; a consumer must tolerate it
+# absent, never treat absence as a schema violation. See references/handoff.md for field-by-field
+# meaning and the seam discipline (this file is a routing index, never a copy of the real code/tests).
+
+handoff_version: 1
+skill: backend
+status: complete              # complete | partial | blocked — see references/handoff.md
+
+objective: ""                  # one sentence: what this backend build implemented
+
+inputs_used:
+  - path: ""                    # e.g. artifacts/contracts.md, artifacts/architecture-handoff.yaml
+    type: ""                    # e.g. contracts, nfr-budgets, threat-model, adrs
+    owner: architecture
+
+artifacts_created:
+  - path: ""
+    type: service                     # the running service/codebase entry point
+    owner: backend
+  - path: ""
+    type: contract-implementation      # the API/event contract as actually implemented
+    owner: backend
+  - path: ""
+    type: tests                        # backend's own unit/integration/contract-producer tests
+    owner: backend
+  - path: ""
+    type: telemetry-hooks               # structured logs, health/readiness endpoints, metrics/trace points
+    owner: backend
+
+decisions: []                    # material calls made and why — e.g. "chose transaction-mode
+                                   # PgBouncer over HTTP-native driver: existing Postgres, needs
+                                   # multi-statement transactions"
+
+assumptions: []                   # unvalidated claims the implementation rests on — mirror any
+                                   # assumption recorded during the build, don't re-derive here
+
+constraints: []                   # hard limits respected: NFR budgets, framework/DB version pins,
+                                   # platform/deploy target
+
+risks: []                          # pointers into a risk-register by id, or new risks surfaced
+                                    # during implementation — never inline a full register here
+
+unresolved:
+  - owner: ""                      # every open question needs a named owner — an orphaned question
+    question: ""                   # with no owner never gets answered
+
+validation:
+  performed: []                     # e.g. "unit + integration tests pass", "12-factor scaffold
+                                      # checklist completed", "contract implementation diffed
+                                      # against architecture's contract"
+  remaining: []                     # e.g. "load test not yet run", "quality's independent security
+                                      # scan not yet performed"
+
+threat_model_border:
+  controls_implemented_by_backend: []   # controls from the threat model backend implemented here
+  controls_for_quality_to_verify: []    # controls quality must verify independently, not assume covered
+
+recommended_next:
+  - skill: operate
+    reason: ""
+  - skill: quality
+    reason: ""
+  - skill: frontend
+    reason: ""
+  - skill: data
+    reason: ""
+  - skill: ai
+    reason: ""

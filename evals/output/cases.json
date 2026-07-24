@@ -1,10 +1,91 @@
 [
   {
-    "id": "primary-artifact",
-    "prompt": "TODO: add a representative execution request.",
+    "id": "auth-jwt-oauth-implementation",
+    "prompt": "Add login with email/password and 'sign in with Google' to our API.",
     "assertions": [
-      "TODO: name an observable artifact requirement",
-      "TODO: name an objective validation or completion requirement"
+      "Password hashing is Argon2id at or above the minimum params (m=19MiB, t=2, p=1), or a stated, justified alternate — never a bare bcrypt/plain-hash with no params named",
+      "Access token is short-lived (≤15 min) and the refresh token rotates on use with reuse-triggered whole-family revocation (RFC 9700), not a single long-lived JWT",
+      "The OAuth flow is Authorization Code + PKCE (S256) with exact-string redirect-URI matching — never Implicit or Resource Owner Password Credentials",
+      "No bearer token (JWT or opaque) is ever written to localStorage/sessionStorage — HttpOnly/Secure/SameSite cookies or a BFF is used instead",
+      "JWT verification pins the expected algorithm and validates exp/nbf/iss/aud rather than trusting the token's own alg header",
+      "States the authorization model (RBAC/ABAC/ReBAC/rule-strings) picked and why, not left implicit"
+    ]
+  },
+  {
+    "id": "outbox-transactional-write",
+    "prompt": "Make sure our order-confirmation event reliably reaches the message broker even if the process crashes right after the DB write.",
+    "assertions": [
+      "The outbox event is written to the outbox table in the SAME local transaction as the business write — never a separate dual write",
+      "Consumers dedupe by event ID (idempotency-key mechanics), not by assuming exactly-once delivery",
+      "Delivery-semantics stance is stated explicitly (at-least-once + idempotent consumers is the default; exactly-once is justified in writing if chosen)",
+      "A relay strategy (polling publisher vs CDC/transaction-log tailing) is named with its tradeoff, not left unspecified",
+      "Cleanup/growth of the outbox table is addressed (e.g. remove-after-insert), not left to grow unbounded"
+    ]
+  },
+  {
+    "id": "owasp-controls-checklist",
+    "prompt": "Audit this API against the OWASP Top 10 and report what's covered.",
+    "assertions": [
+      "Output is a uniform table (control → implementation → verified), never a narrative summary",
+      "Reports a self-audit count of controls verified against the total required (e.g. 'N / 10'), not just a list",
+      "Injection control is stated as parameterized queries/bound params specifically, not 'we validate input' alone",
+      "CORS control confirms no wildcard-with-credentials and that preflight is answered explicitly",
+      "Secrets control confirms zero hardcoded secrets and names the centralized manager, not just 'we use env vars'"
+    ]
+  },
+  {
+    "id": "persistence-migration-and-transactions",
+    "prompt": "Add a new required field to the payments table and make sure the balance-transfer transaction can't corrupt data under concurrent writes.",
+    "assertions": [
+      "The migration follows expand/contract (add nullable/defaulted, backfill, then contract in a later deploy) — never a same-deploy rename/drop of a column still read by running code",
+      "The transaction isolation level for the money-sensitive path is named explicitly (Serializable, SELECT ... FOR UPDATE, or optimistic version column), not left at the driver default",
+      "Any new foreign key gets its index added explicitly (Postgres does not auto-index foreign keys)",
+      "Pooling strategy matches the actual deployment target (warm long-running vs cold serverless), not assumed",
+      "If the target DB isn't Postgres, its actual default isolation level is stated (e.g. MySQL/InnoDB defaults to Repeatable Read, not Read Committed) rather than assumed"
+    ]
+  },
+  {
+    "id": "api-contract-implementation",
+    "prompt": "Implement the orders API behind our existing OpenAPI contract, with pagination and a versioning scheme.",
+    "assertions": [
+      "One schema/contract declaration drives validation, serialization, and docs/types — no hand-duplicated shape maintained separately",
+      "Every error path (expected and unexpected) returns the same normalized error shape; nothing throws an unhandled exception past the framework boundary",
+      "Pagination is cursor-based for any collection at scale or under concurrent writes, with offset pagination justified only for small/low-write admin lists",
+      "A versioning strategy is stated explicitly in code (URL-path or header for REST; additive-only for GraphQL; field-number discipline for gRPC), not left implicit",
+      "Current official framework docs/types were checked for the target version before generating framework-specific code"
+    ]
+  },
+  {
+    "id": "serverless-db-connection-handling",
+    "prompt": "Deploy this API to Cloudflare Workers and make sure it can talk to our existing Postgres database.",
+    "assertions": [
+      "No plain TCP Postgres client is wired directly into the Workers handler",
+      "Either a pooler-in-transaction-mode or an HTTP-native driver is named explicitly as the fix, with its tradeoff stated (e.g. transaction-mode pooling breaks LISTEN/NOTIFY and some session-scoped features)",
+      "No in-process state (module-level cache, session affinity) is assumed to survive between invocations",
+      "Runtime-specific event/handler shapes are isolated in an adapter layer, not spread through route/service/domain code",
+      "Each piece of state is mapped explicitly to the storage primitive suited to it (KV/D1/R2/Durable Object), not defaulted to 'just use KV'"
+    ]
+  },
+  {
+    "id": "backend-testing-prove-it-works",
+    "prompt": "Prove that our new persistence-layer change actually works before we call it done.",
+    "assertions": [
+      "The prove-it-works verification loop is actually run and reported ✓/✗ per phase (env, lint, migrate, test+coverage, endpoint, diff review), not asserted from memory",
+      "Integration tests run against a real dependency (testcontainer or equivalent), not a hand-mocked DB driver",
+      "Domain/use-case unit tests require no real DB/HTTP attached — a failure here is flagged as a layering problem, not patched over with more mocks",
+      "If a published contract (OpenAPI/proto/SDL) exists, the implementation is verified against it in the suite rather than trusted to match by convention",
+      "No debug artifacts (stray prints/console.logs, leftover task-comment markers, a flipped debug flag) remain in the diff"
+    ]
+  },
+  {
+    "id": "domain-logic-anti-anemic",
+    "prompt": "Add a use-case for confirming an order once payment succeeds.",
+    "assertions": [
+      "The state-check-then-mutate logic (e.g. 'if pending and total > 0, mark confirmed') lives as a named method on the Order entity/aggregate itself, not in the application service",
+      "The domain layer has zero framework/ORM imports — the ORM model is mapped to a separate domain entity, never used as the domain model directly",
+      "The use-case/application-service method stays thin: load aggregate → call its domain method → save → publish events, with the transaction boundary owned at this layer, not inside the domain",
+      "There is one repository per aggregate root, not one per entity",
+      "Cross-aggregate coordination (if any) uses a domain event, not a single transaction spanning two aggregate roots"
     ]
   }
 ]
