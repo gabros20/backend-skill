@@ -10,6 +10,19 @@ The release procedure synchronizes `.codex-plugin/plugin.json`, this changelog, 
 ### Added
 - Queue unreleased changes here.
 
+## [0.1.1] — 2026-07-27
+
+### Fixed
+- The `implement inside the decision` invariant named `architecture`, `data`, `ai`, `operate`,
+  `quality`, and `automation` but never `product`, leaving a backend request that is really a
+  product decision — should this endpoint exist, what should it do, its acceptance criteria — with
+  nowhere to route. Adds `product` to the same bullet.
+- `backend` ceded nothing to `automation` in writing, despite `async-and-messaging` owning
+  saga/idempotency/outbox and `service-integration` owning webhooks and breakers that collide with
+  vendor-spanning business processes. Adds the boundary to the invariant and to the Skip-when blocks
+  of both colliding references: when the participant is opaque, un-scriptable, and partly human,
+  the discipline is `automation`'s.
+
 ## [0.1.0] — 2026-07-24
 
 ### Added
@@ -24,4 +37,5 @@ The release procedure synchronizes `.codex-plugin/plugin.json`, this changelog, 
   Retrieval-first, default-stack-then-deviate, implement-inside-the-decision; consumes architecture's
   contracts/budgets/threat-model and hands running services + telemetry hooks to `operate`/`quality`.
 
+[0.1.1]: https://github.com/gabros20/backend-skill/releases/tag/v0.1.1
 [0.1.0]: https://github.com/gabros20/backend-skill/releases/tag/v0.1.0

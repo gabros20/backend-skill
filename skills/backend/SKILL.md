@@ -77,12 +77,13 @@ request nothing downstream will read.
 
 ## Universal invariants
 
-- **Implement inside the decision.** Own the running server, not the boundary/contract-shape/
-  NFR-budget/threat-model *decision* (→ `architecture`), OLAP/pipelines (→ `data`), the LLM/agent
-  *core* (→ `ai`), deploy/CI/monitoring (→ `operate`), the independent load-test/scan/gate (→
-  `quality`), or a **business process spanning vendors you cannot deploy to** (→ `automation`).
-  Consume upstream artifacts; when they don't exist (standalone run), say so explicitly rather than
-  inventing a contract or threat model to fill the gap.
+- **Implement inside the decision.** Own the running server, not what to build and why, its
+  acceptance criteria, or its priority (→ `product`), the boundary/contract-shape/NFR-budget/
+  threat-model *decision* (→ `architecture`), OLAP/pipelines (→ `data`), the LLM/agent *core* (→
+  `ai`), deploy/CI/monitoring (→ `operate`), the independent load-test/scan/gate (→ `quality`), or a
+  **business process spanning vendors you cannot deploy to** (→ `automation`). Consume upstream
+  artifacts; when they don't exist (standalone run), say so explicitly rather than inventing a
+  contract or threat model to fill the gap.
 - **Your substrate is one you control.** `async-and-messaging`'s saga, idempotency and outbox assume
   the other participant is your own service, or a webhook you can dedupe against. When the
   participant is **opaque, un-scriptable, and partly human** — no rollback because the vendor has no
