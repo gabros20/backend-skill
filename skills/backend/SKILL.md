@@ -79,9 +79,16 @@ request nothing downstream will read.
 
 - **Implement inside the decision.** Own the running server, not the boundary/contract-shape/
   NFR-budget/threat-model *decision* (→ `architecture`), OLAP/pipelines (→ `data`), the LLM/agent
-  *core* (→ `ai`), deploy/CI/monitoring (→ `operate`), or the independent load-test/scan/gate (→
-  `quality`). Consume upstream artifacts; when they don't exist (standalone run), say so explicitly
-  rather than inventing a contract or threat model to fill the gap.
+  *core* (→ `ai`), deploy/CI/monitoring (→ `operate`), the independent load-test/scan/gate (→
+  `quality`), or a **business process spanning vendors you cannot deploy to** (→ `automation`).
+  Consume upstream artifacts; when they don't exist (standalone run), say so explicitly rather than
+  inventing a contract or threat model to fill the gap.
+- **Your substrate is one you control.** `async-and-messaging`'s saga, idempotency and outbox assume
+  the other participant is your own service, or a webhook you can dedupe against. When the
+  participant is **opaque, un-scriptable, and partly human** — no rollback because the vendor has no
+  un-send, credentials expiring across a vendor fleet, a human approval step, or drift that only a
+  reconciliation loop against the vendor's own state will catch — that is `automation`. The
+  primitives here still apply; the operating discipline around them is theirs.
 - **Retrieval-first / anti-staleness.** Backend frameworks/ORMs/DBs ship breaking changes fast
   (Prisma 7, Drizzle 0.x→1.0, Go 1.22 routing, Kafka 4.0 KRaft-only, Redis licensing, PG19). Before
   generating any framework/ORM/DB-specific code, fetch the current official docs/types and version-gate

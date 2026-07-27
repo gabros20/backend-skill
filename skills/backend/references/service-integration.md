@@ -19,6 +19,10 @@ Skip when:
 - The work is deploying or monitoring the integration (uptime, alerting on breaker trips) → `operate`.
 - The work is the auth handshake for the third-party call (OAuth2 client-credentials, API-key
   rotation) → `auth`.
+- The work is a **multi-vendor business process** rather than one integration — reconciling against a
+  vendor's own state to catch what a webhook never delivered, managing credentials across a fleet of
+  vendors, a human approval node, or cross-system sync — → `automation`. One outbound call and its
+  breaker are in scope here; the process wrapped around several of them is not.
 
 Inputs:
 - The external API's documented contract, rate limits, and webhook-signing scheme. State explicitly

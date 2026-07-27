@@ -19,6 +19,10 @@ Skip when:
 - The work is streaming analytics/OLAP off an event stream → `data`.
 - The work is deploying, scaling, or monitoring the broker/queue itself → `operate`.
 - SQL mechanics for a jobs table (indexes, isolation level, connection pooling) → `persistence`.
+- The saga spans **vendors you cannot deploy to** rather than your own services — the compensating
+  action does not exist on the other side (no un-send, no un-charge), or a step is a human approval
+  → `automation`. The saga/idempotency/outbox mechanics defined here still apply; the discipline for
+  running them against an opaque third party is `automation`'s.
 
 Inputs:
 - Current stack (already Postgres-centric? existing broker?), rough throughput, and whether the
