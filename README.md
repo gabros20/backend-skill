@@ -2,6 +2,8 @@
 
 **Visual guide:** [backendengskill.vercel.app](https://backendengskill.vercel.app)
 
+**Family hub:** [digital-product-skill.vercel.app](https://digital-product-skill.vercel.app) — the 15-skill Digital Product family and its composer.
+
 Implement **the running server behind the contract** — API endpoints, domain logic, OLTP
 persistence, auth, async jobs and messaging, caching, security controls, outbound integrations, and
 the tests that prove it works — across REST/GraphQL/gRPC/realtime/serverless-edge/agentic backends
