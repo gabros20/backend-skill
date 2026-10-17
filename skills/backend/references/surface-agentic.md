@@ -12,6 +12,8 @@ Read when:
   to an agent/Claude/GPT."
 - A human-facing API also needs to be callable by an agent (dual-surface: same backend, two
   clients).
+- An agent action waits on a human approval, a run must survive a deploy, or agent spend must be
+  capped per run.
 
 Skip when:
 - The request is about the agent's reasoning/prompts/eval loop itself — that's `ai`'s core; this
@@ -30,7 +32,8 @@ Inputs:
 Produces:
 - A backend that (a) survives agent-loop crashes/restarts without hand-rolled state machines,
   (b) exposes typed, agent-legible tool/MCP endpoints, (c) wires retrieval plumbing without owning
-  the retrieval logic, and (d) scopes what an agent can do with short-lived, auditable tokens.
+  the retrieval logic, (d) scopes what an agent can do with short-lived, auditable tokens, and
+  (e) pauses runs for approval, pins their versions, and caps their spend.
 
 ## Contents
 - Durable execution as the default control plane
@@ -38,7 +41,8 @@ Produces:
 - Agent-legible contracts and errors
 - RAG-retrieval plumbing — own the plumbing, not the core
 - Best-practice skills for the datastore
-- Agent-scoped auth
+- Agent-scoped auth (incl. MCP token audience)
+- Run control: approvals, version pins, budgets, linked lifecycles
 
 ## Procedure
 
@@ -123,6 +127,36 @@ calls an agent token authorized, since agent actions need the same auditability 
 privileged automation. If the agent needs elevated or destructive actions (writes, deletes, spend),
 require an explicit scope grant per action class rather than a single broad "agent" role.
 
+**MCP/OAuth token rules.** An MCP server is an OAuth resource server: validate issuer, expiry,
+scopes, and that the token names *this* server as audience (RFC 8707) — the MCP authorization spec
+makes that a MUST and forbids accepting or transiting any other token. Its security best practices
+name **token passthrough** (forwarding the client's token downstream) as the anti-pattern behind
+confused-deputy and broken audit: call downstream with the server's own credential. Refresh tokens
+and connection secrets stay server-side, referenced by ID — never in model context, tool
+arguments, or logs. MCP is not application authorization: every tool call still passes `auth`'s
+per-object check. Credential fleet lifecycle → `automation` (`credentials-and-connections.md`).
+
+### 7. Run control: approvals, version pins, budgets, linked lifecycles
+- **Approval is a paused run, not a new turn.** Persist the request and the waiting state; the
+  approval is an authenticated API call writing a one-use decision that signals the run
+  (`async-and-messaging` §7). On resume, re-check current grants plus the approval's expiry, nonce,
+  and payload hash, and consume it in the executing step (OWASP AI Agent Security Cheat Sheet:
+  check and consume atomically, immediately before execution). What an approval binds is decided
+  upstream (`architecture` `surface-agentic.md`, *Agent security*); a duplicate effect after a crash
+  is the operation ledger's to stop (`async-and-messaging` §2), not the approval's.
+- **Pin versions per run** — prompt, tool, skill, model config, workflow definition — and keep old
+  workers until their runs drain or migrate explicitly (Temporal Worker Versioning: pinned workflows
+  finish on one deployment version while the old one drains; docs read 2026-10-17). A deploy must
+  never silently change what an approved action means.
+- **Reserve budget in the run's own transaction**; child runs draw from the parent's reservation;
+  settle estimated vs billed idempotently. Per-tenant concurrency keys (`async-and-messaging` §7)
+  keep one tenant from draining a shared provider quota.
+- **Four lifecycles, linked by reference** — run engine, conversation/event store, sandbox, object
+  storage. A transcript cannot restore a lost process; a replay cannot recover a file the sandbox
+  discarded, so copy artifacts out first (Cursor keeps loop, machine, and conversation state
+  decoupled — *What we've learned building cloud agents*). The engine owns execution history, the
+  product database user-facing records; never write one status in both without a reconcile rule.
+
 ## Validation
 - [ ] Every agent-loop path spanning >1 tool call or >1 request cycle has a stated durability
       story (durable-execution engine, or an explicit justification for why it's out of scope).
@@ -134,6 +168,11 @@ require an explicit scope grant per action class rather than a single broad "age
       border was stated explicitly, not assumed.
 - [ ] Agent-issued tokens are scoped and short-lived, distinct from the human session they act on
       behalf of; privileged actions require explicit scope grants.
+- [ ] MCP/tool servers accept only tokens issued for their own audience and never pass an inbound
+      token downstream; refresh tokens never reach model context, tool arguments, or logs.
+- [ ] Approvals pause the run and are re-checked (grants, expiry, nonce, payload) and consumed at
+      execution; each run pins its versions and holds a transactional budget reservation that its
+      children draw from.
 - [ ] Retrieval-first check: current docs/CLI/SDK for any agent-facing vendor tool (Drizzle, Better-
       Auth, MCP SDK) were fetched, not assumed from training data.
 
