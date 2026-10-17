@@ -31,12 +31,12 @@ Inputs:
 
 Produces:
 - A broker/queue pick with rationale, plus the reliability patterns applied: idempotency-key path,
-  outbox (if a DB write must reliably notify elsewhere), saga with compensations (if multi-service),
+  operation ledger (if a worker calls out to an irreversible effect), outbox (if a DB write must reliably notify elsewhere), saga with compensations (if multi-service),
   an explicit delivery-semantics stance, and a durable-execution decision if the process is long-lived.
 
 ## Contents
 - Choosing the queue/broker (Postgres-as-queue vs Kafka/NATS/RabbitMQ/SQS)
-- Idempotency keys
+- Idempotency keys + the operation ledger for external effects
 - Transactional outbox
 - Saga (choreography vs orchestration)
 - Delivery semantics
@@ -77,6 +77,24 @@ boundary (`service-integration` applies the same primitive to inbound webhooks �
 redefine). Two equivalent storage shapes, worth teaching as one concept: TTL-based (dedupe within a
 time window) and status-based (dedupe by run status) — Hatchet ships both as SDK config, not just a
 raw hash-the-payload trick. See `assets/idempotency-and-outbox-recipes.md` for a fillable handler.
+
+**Operation ledger for external effects — owned here.** The idempotency key dedupes retries coming
+*in*; a worker or agent tool calling *out* to an effect you cannot roll back (send, charge,
+provision) needs the mirror image — one ledger row per consequential action, reserved in a
+transaction before the call, **unique on logical action + resource scope** (DDL and states: the
+recipes asset, Recipe 3). A genuine retry resends the **same** downstream key (Temporal: workflow
+run ID + activity ID is stable across retries); a new user-authorized action gets a new logical ID;
+same key with different arguments is a validation error, not a replay (AWS Builders' Library,
+*Making retries safe with idempotent APIs*). Persist the receipt before advancing. A post-submit
+timeout is `unknown`: look it up downstream or read the target's state, else park for review —
+never re-fire an irreversible call. The ledger alone does not close the window between downstream
+success and the local receipt write (Temporal documents it: the activity succeeds, the worker
+crashes before reporting, the activity reruns) — only a downstream key or lookup does. An expiring
+lease needs a **fencing token** the store checks, so a stalled worker cannot write after ownership
+moved (Kleppmann, *How to do distributed locking*). Cancel stops future steps; it undoes nothing.
+The contract is `architecture`'s (`contracts.md`, *API-contract review checklist*, Idempotency and
+Error-handling rows); reconciling against a vendor's own records is `automation`'s
+(`reconciliation.md`).
 
 ### 3. Transactional outbox — **owned here**
 The dual-writes problem, precisely: an app that commits its DB write, then separately writes to a
@@ -179,6 +197,13 @@ Two runtimes, two tradeoffs:
 - Default: reach for a Postgres-backed durable-execution engine first if already Postgres-centric and
   scale is moderate; graduate to Temporal once a dedicated cluster/ecosystem or large cross-language
   worker fleets are actually needed.
+- **One execution owner per side effect.** When a graph runtime's checkpointer runs inside a
+  workflow engine (LangGraph in Temporal), the engine owns the business lifecycle, the graph the
+  agent state, and exactly one layer retries each side effect: Temporal retries activities by
+  default (unlimited unless capped), LangGraph node retries are opt-in, and a checkpoint replay
+  re-executes later nodes' API calls — stacked, they multiply the effect. Same for a durability
+  wrapper around a framework that persists its own session. Engine-level task dedup does not make
+  the actions inside a task replay-safe — that is the ledger's job (§2).
 
 ## Validation
 - [ ] Every client-retriable mutation has an idempotency-key path (persisted key→result, TTL set)
@@ -190,7 +215,9 @@ Two runtimes, two tradeoffs:
 - [ ] Retries use jittered backoff (Full Jitter default) with a cap, plus a DLQ or equivalent
       quarantine for poison messages
 - [ ] If durable execution is used, workflow code is verified deterministic/side-effect-free and
-      activities are idempotent-or-non-retryable
+      activities are idempotent-or-non-retryable, and exactly one layer retries each side effect
+- [ ] Every irreversible external effect runs through an operation-ledger row (unique logical
+      action, receipt persisted before advancing, post-submit timeout → `unknown` → lookup or park)
 
 ## Failure modes and handoff
 - The real question is whether this should be async/distributed at all → `architecture` owns that

@@ -1,7 +1,7 @@
-# Idempotency-Key and Transactional-Outbox Recipes
+# Idempotency-Key, Transactional-Outbox, and Operation-Ledger Recipes
 
 Fillable skeletons — copy into the target codebase and fill the bracketed parts. Mechanics and
-rationale: `references/async-and-messaging.md` (§2 idempotency, §3 outbox).
+rationale: `references/async-and-messaging.md` (§2 idempotency and the operation ledger, §3 outbox).
 
 ## Recipe 1 — Idempotency-Key handler
 
@@ -70,8 +70,47 @@ commit;
 5. Cleanup: delete the row once publication is confirmed (`remove-after-insert` default) so the table
    never grows unbounded.
 
+## Recipe 3 — Operation ledger for external effects
+
+Rules: `references/async-and-messaging.md` §2 (*Operation ledger for external effects*).
+
+```sql
+create table operation (
+  id               uuid primary key default gen_random_uuid(),
+  tenant_id        [type] not null,
+  actor_id         [type] not null,           -- the user/agent principal that authorized it
+  run_id           [type] not null,
+  logical_op_id    varchar(255) not null,     -- one per authorized action; reused by its retries
+  resource_scope   varchar(255) not null,     -- e.g. 'invoice:123'
+  tool             varchar(255) not null,
+  tool_version     varchar(64)  not null,
+  args_hash        char(64)     not null,     -- hash of the canonicalized arguments
+  approval_id      [type],                    -- null when no approval was required
+  attempt          int not null default 1,
+  state            varchar(20)  not null,     -- reserved | executing | succeeded | failed | unknown | manual_review
+  downstream_key   varchar(255) not null,     -- idempotency key sent to the provider, stable across retries
+  external_id      varchar(255),              -- the provider's ID for the effect, once known
+  receipt          jsonb,
+  created_at       timestamptz not null default now(),
+  updated_at       timestamptz not null default now(),
+  unique (tenant_id, logical_op_id, resource_scope)
+);
+```
+
+1. Reserve: insert the row (`state = reserved`) in a transaction before calling out; a unique
+   violation means this action already exists — read its state instead of calling again.
+2. Execute: `reserved → executing`, send `downstream_key` `[provider header / field, or "provider has
+   no idempotency support — document the gap"]`.
+3. Settle: success → store `external_id` + `receipt`, `succeeded`, then advance the run; a known
+   failure with no effect → `failed` (a retry within budget re-reserves the same row, `attempt + 1`).
+4. Timeout or crash after submit → `unknown`; reconcile by `[downstream lookup by key or external_id
+   | read the target's current state]`; if neither settles it → `manual_review`, never auto-resubmit.
+5. Same `logical_op_id` with a different `args_hash` → reject as a parameter mismatch.
+
 ## Fill-in checklist
 - [ ] Header/token name for the idempotency key decided
 - [ ] TTL window decided and a cleanup job scheduled
 - [ ] Outbox relay strategy chosen (polling vs CDC) and its latency budget stated
 - [ ] Consumer dedupe key decided (event id vs business key)
+- [ ] Every irreversible external call has a ledger row, a stable downstream key (or a documented
+      gap), and a named reconcile path for `unknown`
