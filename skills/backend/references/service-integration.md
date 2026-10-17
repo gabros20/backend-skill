@@ -37,7 +37,7 @@ Produces:
 - Circuit breaker (closed/open/half-open)
 - Webhooks inbound (verification, idempotent handling)
 - Webhooks outbound (signing, delivery, retry)
-- Calling a third-party / AI / email service
+- Calling a third-party / AI / email service (incl. a model gateway)
 
 ## Procedure
 
@@ -95,6 +95,20 @@ dependency is confirmed down, rather than continuing to jitter-retry against a f
 - Calling an LLM or an existing agent endpoint is in scope here exactly like calling any other
   third-party service (retry/circuit-breaker/rate-limit discipline applies identically); building
   that agent's reasoning core or tool-orchestration loop is `ai`'s job — point there, don't absorb it.
+- **A model gateway is substrate, not policy.** Three products wear the name — a multi-provider
+  marketplace (one account and bill over many providers), a proxy/policy gateway (routing, keys,
+  quotas, logs over your own provider accounts), a hosted-inference catalog (models served on the
+  platform) — name which one you are wiring. OpenAI-compatible is not feature parity: tool calling,
+  structured output, caching, streaming events, and cancellation differ per provider, and a
+  portability layer may reject or silently drop an unsupported parameter (LiteLLM raises by default,
+  drops with `drop_params`) — test the features you use, per route. Gateways retry, cool down, and
+  fall back on their own (LiteLLM Router): that is a retry layer, counted in
+  `async-and-messaging` §6's budget, with exactly one layer owning retries. Set credential fallback
+  explicitly — e.g. as of 2026-10-17 Vercel AI Gateway retries a failed bring-your-own-key request
+  on its system credentials and bills your gateway credits, a cost and data-policy choice rather
+  than a default to inherit. A gateway picks an inference route; it never grants tool permission,
+  tenant access, or action authorization. Which model a request should get is `ai`'s
+  (`model-selection-and-routing.md`).
 - Transactional email/SMS providers get the same client-resilience treatment; most also webhook-notify
   on delivery/bounce/complaint — that inbound notification goes back through §3.
 
@@ -109,6 +123,8 @@ dependency is confirmed down, rather than continuing to jitter-retry against a f
       first failure
 - [ ] Rate-limit headers from the external API are respected proactively, not just caught as errors
       after the fact
+- [ ] A model gateway's own retries/fallbacks are counted as one retry layer, the features in use are
+      tested per route, and its credential-fallback behavior is set explicitly
 
 ## Failure modes and handoff
 - The request is actually about internal jobs/broker/CDC/saga, not an external system →

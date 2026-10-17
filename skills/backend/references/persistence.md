@@ -158,6 +158,16 @@ one Postgres primary + ~50 read replicas (OpenAI eng blog, via
 - **pgvector**: HNSW/IVFFlat, production-stable; start here under ~500K vectors — one SQL
   statement joins vectors and source rows, no dual-write problem. Graduate to Qdrant/Milvus only at
   genuine ANN scale or rich payload filtering at low latency.
+  Two traps once tenants share the table. **Filtered ANN underfills**: HNSW applies the `WHERE`
+  *after* the index scan, so a filter matching 10% of rows returns ~4 rows at the default
+  `hnsw.ef_search` of 40 ([pgvector README](https://github.com/pgvector/pgvector), *Filtering*) —
+  test tenant-filtered recall against exact search, then use iterative index scans (0.8.0+), a
+  partial index for few filter values, or list-partition by tenant; exact search is fine for small
+  scopes. **A privileged connection skips RLS**: superusers, `BYPASSRLS` roles (Supabase's
+  `service_role`/secret key), and table owners without `FORCE ROW LEVEL SECURITY` bypass policies
+  ([PostgreSQL row security](https://www.postgresql.org/docs/current/ddl-rowsecurity.html)) — such
+  a connection still filters by tenant and authorizes; test denied reads, search results, exports,
+  and signed URLs, not only permitted ones.
 - **Jobs-as-queue**: `SELECT ... FOR UPDATE SKIP LOCKED` on a jobs table for atomic claim-and-
   process — the production-safe pattern, not `LISTEN/NOTIFY` alone.
 - **`LISTEN`/`NOTIFY` traps**: notifications are lost if a listener is disconnected when sent;
@@ -199,6 +209,8 @@ permissive/public-domain, no such trap.
 - Pooling strategy matches the actual deployment target (warm long-running vs cold serverless).
 - Any DB product recommended for a hosted/managed-service context carries its license flag.
 - No N+1 pattern (query inside a loop over a collection) ships unreviewed.
+- A tenant-filtered vector search is tested for recall against exact search, and any RLS-bypassing
+  connection carries its own tenant filter, with denied-read tests.
 
 ## Failure modes and handoff
 - **Schema/consistency-model decision still open** — route to `architecture`'s `data-
