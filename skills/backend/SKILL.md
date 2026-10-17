@@ -5,9 +5,10 @@ description: >-
   caching, security controls, integration, and tests — across
   REST/GraphQL/gRPC/realtime/serverless-edge/agentic backends in Node/Python/Go/Rust/JVM. Use to
   build an endpoint, add auth, write a migration, set up a job queue or outbox, add caching/rate
-  limiting, harden (OWASP), integrate a webhook, or expose an agent/MCP endpoint. Not for
-  system/contract design (→ architecture), client/SSR (→ frontend), OLAP (→ data), agent core (→
-  ai), deploy/monitoring (→ operate), or independent QA (→ quality).
+  limiting, harden (OWASP), integrate a webhook, bridge a voice call's audio, or expose an agent/MCP
+  endpoint. Not for system/contract design (→ architecture), client/SSR (→ frontend), OLAP (→
+  data), agent core (→ ai), cross-vendor workflows (→ automation), deploy/monitoring (→ operate),
+  or independent QA (→ quality).
 ---
 
 # Backend Engineering

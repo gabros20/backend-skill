@@ -7,8 +7,11 @@ The release procedure synchronizes `.codex-plugin/plugin.json`, this changelog, 
 
 ## [Unreleased]
 
-### Added
-- Queue unreleased changes here.
+### Fixed
+- Description: names a voice call's audio bridge among the jobs and cedes cross-vendor workflows
+  to `automation`, matching the router's realtime row and the substrate invariant; found by the
+  `positive-surface-realtime-voice-transport` and `negative-automation-vendor-reconciliation`
+  activation cases.
 
 ## [0.3.0] — 2026-10-17
 
