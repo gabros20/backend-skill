@@ -7,6 +7,11 @@ The release procedure synchronizes `.codex-plugin/plugin.json`, this changelog, 
 
 ## [Unreleased]
 
+### Added
+- Queue unreleased changes here.
+
+## [0.3.1] — 2026-10-17
+
 ### Fixed
 - Description: names a voice call's audio bridge among the jobs and cedes cross-vendor workflows
   to `automation`, matching the router's realtime row and the substrate invariant; found by the
@@ -88,6 +93,7 @@ The release procedure synchronizes `.codex-plugin/plugin.json`, this changelog, 
   Retrieval-first, default-stack-then-deviate, implement-inside-the-decision; consumes architecture's
   contracts/budgets/threat-model and hands running services + telemetry hooks to `operate`/`quality`.
 
+[0.3.1]: https://github.com/gabros20/backend-skill/releases/tag/v0.3.1
 [0.3.0]: https://github.com/gabros20/backend-skill/releases/tag/v0.3.0
 [0.2.0]: https://github.com/gabros20/backend-skill/releases/tag/v0.2.0
 [0.1.1]: https://github.com/gabros20/backend-skill/releases/tag/v0.1.1
