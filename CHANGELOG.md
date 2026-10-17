@@ -8,6 +8,11 @@ The release procedure synchronizes `.codex-plugin/plugin.json`, this changelog, 
 ## [Unreleased]
 
 ### Added
+- Queue unreleased changes here.
+
+## [0.3.0] — 2026-10-17
+
+### Added
 - **Voice media transport** (`surface-realtime` §7): the transport follows the caller (WebRTC from a
   browser or app, WebSocket to a speech model, SIP or a programmable-voice media stream for phone);
   the playback-buffer owner truncates on barge-in; telephony μ-law 8 kHz converted at the edge with a
@@ -80,6 +85,7 @@ The release procedure synchronizes `.codex-plugin/plugin.json`, this changelog, 
   Retrieval-first, default-stack-then-deviate, implement-inside-the-decision; consumes architecture's
   contracts/budgets/threat-model and hands running services + telemetry hooks to `operate`/`quality`.
 
+[0.3.0]: https://github.com/gabros20/backend-skill/releases/tag/v0.3.0
 [0.2.0]: https://github.com/gabros20/backend-skill/releases/tag/v0.2.0
 [0.1.1]: https://github.com/gabros20/backend-skill/releases/tag/v0.1.1
 [0.1.0]: https://github.com/gabros20/backend-skill/releases/tag/v0.1.0
