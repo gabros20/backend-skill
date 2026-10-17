@@ -178,5 +178,15 @@
       "references/surface-agentic.md",
       "references/async-and-messaging.md"
     ]
+  },
+  {
+    "id": "realtime-voice-telephony-transport",
+    "prompt": "Our voice agent answers phone calls through a Twilio media stream and talks to a speech-to-speech model over a WebSocket. Build the audio bridge, handle barge-in, and keep calls alive when the model session hits its time limit.",
+    "expected_references": ["references/surface-realtime.md"],
+    "forbidden_references": [
+      "references/surface-event-driven-microservices.md",
+      "references/persistence.md",
+      "references/caching-and-performance.md"
+    ]
   }
 ]

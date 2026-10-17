@@ -135,7 +135,13 @@ drawn from the open standard or the primary concept, not from these renderings' 
   surface-serverless-edge); Cloudflare [Rules of Durable Objects](https://developers.cloudflare.com/durable-objects/best-practices/rules-of-durable-objects/)
   (one object per coordination unit, no single global object — surface-serverless-edge); Replicate
   [Data retention](https://replicate.com/docs/topics/predictions/data-retention) (API prediction data
-  removed after an hour by default — service-integration). The
+  removed after an hour by default — service-integration); Twilio [Media Streams WebSocket messages](https://www.twilio.com/docs/voice/media-streams/websocket-messages)
+  (μ-law 8 kHz mono, bidirectional only under `<Connect><Stream>`, `clear`/`mark`/`dtmf`), OpenAI
+  [Realtime conversations](https://developers.openai.com/api/docs/guides/realtime-conversations)
+  (60-minute session cap, voice fixed per session, server vs client truncation by transport) and
+  Google [Live API session management](https://ai.google.dev/gemini-api/docs/live-session)
+  (connection and session caps, `GoAway`, resumption tokens) — surface-realtime voice transport,
+  dated examples only. The
   three-way gateway taxonomy (marketplace / proxy-policy / hosted-inference catalog) in
   service-integration is this pack's classification of those products' own docs, not a quoted source.
 - **Verify-before-hard-claim (stated as uncertain or omitted in the pack):** the "42% microservices

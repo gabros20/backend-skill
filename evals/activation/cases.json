@@ -123,5 +123,15 @@
     "id": "negative-ai-model-routing",
     "prompt": "Decide which model tier each user request should go to, and set up a learned router that escalates to the strongest model on hard tasks.",
     "should_trigger": false
+  },
+  {
+    "id": "positive-surface-realtime-voice-transport",
+    "prompt": "Wire our voice agent to the phone network: take the Twilio media stream, feed the audio to our speech model, and stop playback when the caller interrupts.",
+    "should_trigger": true
+  },
+  {
+    "id": "negative-ai-voice-turn-taking",
+    "prompt": "Choose between a cascade and a speech-to-speech model for our voice agent and tune the end-of-turn detector so it stops cutting callers off.",
+    "should_trigger": false
   }
 ]
