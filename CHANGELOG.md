@@ -8,6 +8,11 @@ The release procedure synchronizes `.codex-plugin/plugin.json`, this changelog, 
 ## [Unreleased]
 
 ### Added
+- Queue unreleased changes here.
+
+## [0.2.0] — 2026-10-17
+
+### Added
 - **Operation ledger for external effects** (`async-and-messaging` §2 + Recipe 3 in the
   idempotency/outbox asset): one reserved row per irreversible action, unique on logical action +
   resource scope, same downstream key only on a genuine retry, receipt before advancing,
@@ -65,5 +70,6 @@ The release procedure synchronizes `.codex-plugin/plugin.json`, this changelog, 
   Retrieval-first, default-stack-then-deviate, implement-inside-the-decision; consumes architecture's
   contracts/budgets/threat-model and hands running services + telemetry hooks to `operate`/`quality`.
 
+[0.2.0]: https://github.com/gabros20/backend-skill/releases/tag/v0.2.0
 [0.1.1]: https://github.com/gabros20/backend-skill/releases/tag/v0.1.1
 [0.1.0]: https://github.com/gabros20/backend-skill/releases/tag/v0.1.0
