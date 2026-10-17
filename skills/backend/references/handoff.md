@@ -94,8 +94,10 @@ backend implemented against and backend's own test suite as a *starting point*, 
 independent verification — it re-derives its own acceptance tests against the same contract.
 **`frontend`** (when building in parallel against the same contract) needs the contract's actual
 implemented shape confirmed — flag any deviation from the architecture-issued contract explicitly,
-don't let it surface as a silent runtime mismatch. **`data`** needs to know which persistence layer
-and schema backend actually built, when downstream analytics/pipelines read from the same store.
+don't let it surface as a silent runtime mismatch. For an agent backend, that includes the run-event
+contract as implemented (event fields, resume cursor, snapshot path, cancel/approve calls —
+`surface-realtime` §6). **`data`** needs to know which persistence layer and schema backend actually
+built, when downstream analytics/pipelines read from the same store.
 
 ## The seam discipline
 

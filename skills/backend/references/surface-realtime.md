@@ -8,6 +8,8 @@ Read when:
 - The request involves a live connection that outlives a single request/response: chat, live
   collaboration, multiplayer/game state, presence indicators, live dashboards, streaming updates.
 - The request names WebSocket, SSE, "realtime," "pub-sub," "presence," or "rooms/channels."
+- An agent run or long job streams progress to clients that may disconnect, reconnect from another
+  device, or resume mid-run.
 
 Skip when:
 - The client only needs to be *notified* occasionally and can tolerate a request round-trip
@@ -25,8 +27,8 @@ Inputs:
 
 Produces:
 - A connection-handling design: transport choice (WS vs SSE), the actor/room model owning each
-  connection's mutable state, a presence abstraction, and a fan-out strategy sized to the stated
-  scale.
+  connection's mutable state, a presence abstraction, a fan-out strategy sized to the stated
+  scale, and — for runs that outlive the connection — a replayable event log.
 
 ## Contents
 - SSE vs WebSocket: the transport decision
@@ -34,6 +36,7 @@ Produces:
 - Presence as a decoupled abstraction
 - Reliable vs unreliable messaging
 - Fan-out and scaling
+- Replayable run events (a stream over a run that outlives the connection)
 
 ## Procedure
 
@@ -99,6 +102,23 @@ it under load. Options, cheapest-to-most-operationally-heavy:
 Pick based on what's already in the stack (don't introduce Elixir just for Channels; don't add
 Redis if Durable Objects are already available) rather than defaulting to the most-cited option.
 
+### 6. Replayable run events — when the stream reports a run that outlives the connection
+For an agent run or long job, the stream is a *view over a persisted log*, not the run itself:
+- Create the run and an outbox event in one transaction (`async-and-messaging` §3), return the run
+  ID; never acknowledge work that exists only in process memory.
+- Persist each meaningful event: schema version, run ID, event ID, monotonic per-run sequence,
+  step/attempt ID, type, and the payload or an artifact reference (large outputs by reference).
+- Resume by cursor: send the sequence as the SSE `id:` field; on reconnect the browser returns it
+  as the `Last-Event-ID` header (WHATWG HTML, *Server-sent events*), and the server replays the
+  committed events after it, then tails. Cursor aged out of retention → send a state snapshot first.
+  The replay read is authorized like any other read.
+- Mark partial model text provisional, keyed by step/attempt, so a retried step's committed output
+  replaces it — Cursor's cloud agents rewind the client stream on exactly this case (Cursor, *What
+  we've learned building cloud agents*, Jun 2026).
+- Cancel, approve, and other mutations are authenticated API calls, not stream messages; a closed
+  stream is a connectivity event, never an implicit cancel.
+The event contract's shape is `architecture`'s; rendering and client-side resume are `frontend`'s.
+
 ## Validation
 - [ ] Transport choice (SSE vs WS) is justified by whether the client needs to push mid-stream, not
       chosen by default/habit.
@@ -110,6 +130,9 @@ Redis if Durable Objects are already available) rather than defaulting to the mo
       not single-node-only if multi-node was in scope, and not over-built if it wasn't.
 - [ ] Reconnect/backoff handling is implemented client-side for both SSE and WS paths (SSE's native
       auto-reconnect doesn't cover application-level state resync).
+- [ ] A run that outlives its connection streams from a persisted, sequenced event log: replay after
+      `Last-Event-ID`, snapshot when the cursor expired, mutations as authenticated calls, and a
+      disconnect never cancels the run.
 
 ## Failure modes and handoff
 - The base request-lifecycle question (validation, error shape, auth on the initial handshake) is
