@@ -21,7 +21,7 @@ Skip when:
 - The distributed/multi-service fan-out concern (Kafka/NATS as the backbone between services, not
   to browser clients) is the actual ask → `surface-event-driven-microservices`.
 - The voice agent's turn-taking, speech components, or cascade-vs-speech-to-speech choice is the ask →
-  `ai` (`surface-voice.md` "Surface: Voice"); this surface carries only the audio.
+  `ai` (`surface-voice.md` "Surface: Voice (additive)"); this surface carries only the audio.
 
 Inputs:
 - Expected concurrent-connection scale and whether connections are single-node or must fan out
