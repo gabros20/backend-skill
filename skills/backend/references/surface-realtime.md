@@ -10,8 +10,7 @@ Read when:
 - The request names WebSocket, SSE, "realtime," "pub-sub," "presence," or "rooms/channels."
 - An agent run or long job streams progress to clients that may disconnect, reconnect from another
   device, or resume mid-run.
-- A voice agent needs its audio path: WebRTC from a browser or app, a WebSocket to a speech model,
-  or a phone call over SIP or a programmable-voice media stream.
+- A voice agent needs its audio path (WebRTC, a WebSocket to a speech model, SIP, a media stream).
 
 Skip when:
 - The client only needs to be *notified* occasionally and can tolerate a request round-trip
@@ -20,8 +19,8 @@ Skip when:
   presence model needed; stay on `surface-rest-crud`.
 - The distributed/multi-service fan-out concern (Kafka/NATS as the backbone between services, not
   to browser clients) is the actual ask → `surface-event-driven-microservices`.
-- The voice agent's turn-taking, speech components, or cascade-vs-speech-to-speech choice is the ask →
-  `ai` (`surface-voice.md` "Surface: Voice (additive)"); this surface carries only the audio.
+- Turn-taking, speech components, or the voice architecture is the ask → `ai` (`surface-voice.md`
+  "Surface: Voice (additive)"); this surface carries only the audio.
 
 Inputs:
 - Expected concurrent-connection scale and whether connections are single-node or must fan out
@@ -119,25 +118,22 @@ and client-side resume are `frontend`'s.
 ### 7. Voice media transport — the substrate under a voice agent
 - **Where the caller is picks the transport.** Browser or app → WebRTC; server to a speech model →
   WebSocket; phone → a SIP trunk into your media server or the model's SIP endpoint, or a
-  programmable-voice media stream forking call audio to your WebSocket. The playback-buffer owner
-  truncates on barge-in: over WebRTC and SIP the provider's server knows what played; over a
-  WebSocket the client plays, so it stops playback and truncates (OpenAI, *Realtime conversations*).
+  programmable-voice media stream forking call audio to your WebSocket.
 - **Telephony media is a fixed codec.** Twilio Media Streams carry base64 μ-law, 8 kHz, mono, both
-  ways, no header bytes; a model expecting 16/24 kHz PCM needs transcoding and resampling at the
-  edge, and the band limit stays. Only a `<Connect><Stream>` stream is bidirectional and delivers
-  `dtmf` — required to play audio back, take key presses, or learn what played (Twilio, *Media
-  Streams WebSocket messages*).
-- **Barge-in is a playback-control sequence.** On caller speech: flush buffered audio (`clear`,
-  which returns the pending `mark`s), cancel in-flight LLM and TTS work, and record from the marks
-  how much played, so history keeps only what the caller heard (`conversation.item.truncate` with
-  the played `audio_end_ms` on a WebSocket speech-to-speech session). Buffered media plays in order;
-  a skipped flush keeps the agent talking over the caller.
+  ways, no header bytes; a 16/24 kHz PCM model needs transcoding and resampling at the edge, and the
+  band limit stays. Only a `<Connect><Stream>` stream is bidirectional and delivers `dtmf` (Twilio,
+  *Media Streams WebSocket messages*).
+- **Barge-in is a playback-control sequence, with one owner.** On caller speech: flush buffered
+  audio (`clear`, which returns the pending `mark`s), cancel in-flight LLM and TTS work, and record
+  from the marks how much played, so history keeps only what the caller heard. Whoever plays the
+  audio truncates: over WebRTC and SIP the provider's server; over a WebSocket the client, with
+  `conversation.item.truncate` and the played `audio_end_ms` (OpenAI, *Realtime conversations*).
+  Never run a native and a manual interruption handler together — both act, and playback overlaps.
 - **Capped model sessions reconnect from day one.** Speech-to-speech sessions end on hard caps — as
-  of 2026-10-17, OpenAI Realtime sessions at 60 minutes; Gemini Live connections at about 10 minutes
-  and audio-only sessions at 15 minutes without context compression, with a `GoAway` carrying
-  `timeLeft` before the close and resumption tokens valid 2 hours (Google, *Live API session
-  management*) — re-verify before sizing to one. The call's actor (§2) owns the call; the model
-  connection is a replaceable child: on `GoAway` or close, resume with the latest handle or re-seed a
+  of 2026-10-17, OpenAI Realtime sessions at 60 minutes; Gemini Live connections at about 10
+  minutes, with a `GoAway` before the close and resumption tokens (Google, *Live API session
+  management*) — re-verify. The call's actor (§2) owns the call; the model connection is a
+  replaceable child: on `GoAway` or close, resume with the latest handle or re-seed a
   session from the persisted transcript with the same voice (fixed once a session has spoken), never
   dropping the phone leg.
 
@@ -155,9 +151,9 @@ and client-side resume are `frontend`'s.
 - [ ] A run that outlives its connection streams from a persisted, sequenced event log: replay after
       the client's cursor (`Last-Event-ID` or an explicit parameter), snapshot + sequence when there
       is no cursor or it expired, mutations as authenticated calls, and a disconnect never cancels.
-- [ ] A voice path names its transport by caller location, converts the telephony codec at the edge,
-      flushes playback and records what played on barge-in, and survives a model-session cap without
-      dropping the call.
+- [ ] A voice path picks its transport by caller location, converts the codec at the edge, has one
+      barge-in owner that records what played, and survives a model-session cap without dropping
+      the call.
 
 ## Failure modes and handoff
 - The base request-lifecycle question (validation, error shape, auth on the initial handshake) is
@@ -170,5 +166,7 @@ and client-side resume are `frontend`'s.
   here (crash-durability vs. best-effort-delivery are different problems).
 - Presence/auth needs per-connection authorization decisions (who can join which room) → implement
   against `auth`'s session/token model; don't invent a parallel authz path for sockets.
-- Voice-to-voice latency SLI, per-minute cost and concurrency, carrier outages, or recording
-  retention → `operate`; verifying the call at the caller's ear → `quality`.
+- Voice-to-voice latency SLI, call cost, carrier outages, or recording retention → `operate`
+  (`surface-ai-system.md` "Time-to-first-token is a distinct SLI from total duration"); verifying
+  the call at the caller's ear → `quality` (`surface-ai-system.md` "Voice: evidence at the caller's
+  ear").

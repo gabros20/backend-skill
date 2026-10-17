@@ -11,7 +11,8 @@ The release procedure synchronizes `.codex-plugin/plugin.json`, this changelog, 
 - **Voice media transport** (`surface-realtime` §7): the transport follows the caller (WebRTC from a
   browser or app, WebSocket to a speech model, SIP or a programmable-voice media stream for phone);
   the playback-buffer owner truncates on barge-in; telephony μ-law 8 kHz converted at the edge with a
-  bidirectional stream for playback and DTMF; barge-in as flush → cancel → record what played; capped
+  bidirectional stream for playback and DTMF; barge-in as flush → cancel → record what played, with
+  one interruption owner; capped
   speech-to-speech sessions reconnect as a replaceable child of the call actor. Dated session caps
   only as re-verify examples; turn-taking and model choice point to `ai` (`surface-voice.md`). Router
   row, Validation line, activation/traversal/output evals, SOURCES entries.
