@@ -26,7 +26,10 @@ The release procedure synchronizes `.codex-plugin/plugin.json`, this changelog, 
   echo in `auth`.
 - `persistence`: pgvector filtered-search underfill and the RLS bypass by privileged connections.
 - `service-integration`: a model gateway as substrate — feature parity per route, its retries as one
-  retry layer, explicit credential fallback, never a permission grant.
+  retry layer, explicit credential fallback, never a permission grant; copy provider outputs before
+  their retention window closes.
+- `surface-serverless-edge`: a pooler's default query cache is off for permission, billing, and
+  ledger reads. `surface-agentic` §6 also binds tool-returned state handles to the verified user.
 - Router rows, a frontend handoff seam, and evals: 1 positive + 2 near-miss activation cases
   (`automation` reconciliation, `ai` model routing), 2 traversal cases, 1 output case.
 

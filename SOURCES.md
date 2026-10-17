@@ -100,7 +100,7 @@ drawn from the open standard or the primary concept, not from these renderings' 
   [Authorization spec](https://modelcontextprotocol.io/specification/latest/basic/authorization)
   (token audience validation, no token transit) and
   [Security Best Practices](https://modelcontextprotocol.io/docs/draft/tutorials/security/security_best_practices)
-  (token passthrough, confused deputy) — surface-agentic, auth.
+  (token passthrough, confused deputy, state-handle hijacking) — surface-agentic, auth.
 - **Concepts / books (concept index only, never reproduced):** Eric Evans, *Domain-Driven Design*;
   Vaughn Vernon, *Implementing Domain-Driven Design*; Alistair Cockburn, *Hexagonal Architecture*;
   Robert C. Martin, *Clean Architecture* (the Dependency Rule); Martin Kleppmann, *Designing
@@ -129,7 +129,11 @@ drawn from the open standard or the primary concept, not from these renderings' 
   (`service_role` bypasses RLS); LiteLLM docs — [Drop unsupported params](https://docs.litellm.ai/docs/completion/drop_params)
   and [Router](https://docs.litellm.ai/docs/routing) (gateway-level retries, cooldowns, fallbacks);
   Vercel AI Gateway [BYOK](https://vercel.com/docs/ai-gateway/authentication-and-byok/byok)
-  (failed BYOK request falls back to system credentials, billed to credits — a dated example). The
+  (failed BYOK request falls back to system credentials, billed to credits — a dated example);
+  Cloudflare Hyperdrive [Query caching](https://developers.cloudflare.com/hyperdrive/concepts/query-caching/)
+  (on by default, 60 s `max_age` — surface-serverless-edge); Replicate
+  [Data retention](https://replicate.com/docs/topics/predictions/data-retention) (API prediction data
+  removed after an hour by default — service-integration). The
   three-way gateway taxonomy (marketplace / proxy-policy / hosted-inference catalog) in
   service-integration is this pack's classification of those products' own docs, not a quoted source.
 - **Verify-before-hard-claim (stated as uncertain or omitted in the pack):** the "42% microservices

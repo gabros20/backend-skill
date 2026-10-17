@@ -131,10 +131,12 @@ require an explicit scope grant per action class rather than a single broad "age
 scopes, and that the token names *this* server as audience (RFC 8707) — the MCP authorization spec
 makes that a MUST and forbids accepting or transiting any other token. Its security best practices
 name **token passthrough** (forwarding the client's token downstream) as the anti-pattern behind
-confused-deputy and broken audit: call downstream with the server's own credential. Refresh tokens
-and connection secrets stay server-side, referenced by ID — never in model context, tool
-arguments, or logs. MCP is not application authorization: every tool call still passes `auth`'s
-per-object check. Credential fleet lifecycle → `automation` (`credentials-and-connections.md`).
+confused-deputy and broken audit: call downstream with the server's own credential; an MCP proxy on
+a static client ID keeps per-client consent. A state handle a tool returns (cart, workflow ID) is
+never authentication — bind it server-side to the verified user. Refresh tokens and connection
+secrets stay server-side, referenced by ID — never in model context, tool arguments, or logs. MCP is
+not application authorization: every tool call still passes `auth`'s per-object check. Credential
+fleet lifecycle → `automation` (`credentials-and-connections.md`).
 
 ### 7. Run control: approvals, version pins, budgets, linked lifecycles
 - **Approval is a paused run, not a new turn.** Persist the request and the waiting state; the

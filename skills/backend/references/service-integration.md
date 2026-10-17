@@ -109,6 +109,10 @@ dependency is confirmed down, rather than continuing to jitter-retry against a f
   than a default to inherit. A gateway picks an inference route; it never grants tool permission,
   tenant access, or action authorization. Which model a request should get is `ai`'s
   (`model-selection-and-routing.md`).
+- **Provider-generated outputs are yours to keep.** Copy results into your own storage before the
+  provider's retention window closes (Replicate deletes API prediction inputs, outputs, and files
+  after an hour by default — docs read 2026-10-17); a paid job that times out after submit is a
+  ledger `unknown` (`async-and-messaging` §2) — reconcile before a second paid submission.
 - Transactional email/SMS providers get the same client-resilience treatment; most also webhook-notify
   on delivery/bounce/complaint — that inbound notification goes back through §3.
 

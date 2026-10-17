@@ -70,6 +70,9 @@ Two independent fixes, often combined — full mechanics owned by [persistence](
   it blind: transaction-mode pooling breaks session-scoped features (LISTEN/NOTIFY, advisory locks,
   some `SET`/temp-table usage) unless the pooler version specifically restores them (PgBouncer 1.21+
   added prepared-statement support in transaction mode — verify the deployed version, don't assume).
+  A pooler can also *cache*: Hyperdrive caches eligible read-only query results by default
+  (`max_age` 60 s; Cloudflare docs, *Query caching*, read 2026-10-17) — disable it for any path that
+  reads permissions, billing, or an operation ledger, which tolerate no staleness.
 - **An HTTP-native driver that skips persistent TCP connections entirely** — e.g. Neon's HTTP driver
   or Turso/libSQL's HTTP protocol issue each query as a stateless HTTP request instead of holding a
   socket open. This is a clean fit for edge runtimes where holding long-lived TCP sockets is awkward
