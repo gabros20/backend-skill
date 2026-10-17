@@ -14,7 +14,7 @@ The release procedure synchronizes `.codex-plugin/plugin.json`, this changelog, 
   bidirectional stream for playback and DTMF; barge-in as flush → cancel → record what played, with
   one interruption owner; capped
   speech-to-speech sessions reconnect as a replaceable child of the call actor. Dated session caps
-  only as re-verify examples; turn-taking and model choice point to `ai` (`surface-voice.md`). Router
+  stay in `ai`; turn-taking and model choice point to `ai` (`surface-voice.md`). Router
   row, Validation line, activation/traversal/output evals, SOURCES entries.
 
 ### Changed

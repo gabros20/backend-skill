@@ -118,7 +118,7 @@
       "Uses a bidirectional stream so audio can be played back and DTMF received",
       "On barge-in flushes buffered playback (`clear`), cancels in-flight generation, and records how much audio played (marks) so history holds only what the caller heard — truncating the model's item on a WebSocket session",
       "Treats the model connection as a replaceable child of the call: reconnects on the provider's warning or close with a resumption handle or a re-seeded session, without dropping the phone leg",
-      "Dated session-cap figures are marked as dated and to re-verify; turn detection and model choice are pointed to `ai`, not designed here"
+      "Session-cap figures are not restated but taken from `ai` as dated facts; turn detection and model choice are pointed to `ai`, not designed here"
     ]
   }
 ]

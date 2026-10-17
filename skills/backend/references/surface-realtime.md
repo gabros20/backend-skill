@@ -129,10 +129,10 @@ and client-side resume are `frontend`'s.
   audio truncates: over WebRTC and SIP the provider's server; over a WebSocket the client, with
   `conversation.item.truncate` and the played `audio_end_ms` (OpenAI, *Realtime conversations*).
   Never run a native and a manual interruption handler together — both act, and playback overlaps.
-- **Capped model sessions reconnect from day one.** Speech-to-speech sessions end on hard caps — as
-  of 2026-10-17, OpenAI Realtime sessions at 60 minutes; Gemini Live connections at about 10
-  minutes, with a `GoAway` before the close and resumption tokens (Google, *Live API session
-  management*) — re-verify. The call's actor (§2) owns the call; the model connection is a
+- **Capped model sessions reconnect from day one.** Speech-to-speech sessions end on hard caps (dated
+  caps: `ai` `surface-voice.md` "Architecture: cascade, native speech-to-speech, or hybrid"); Gemini
+  Live sends a `GoAway` before the close and issues resumption tokens (Google, *Live API session
+  management*). The call's actor (§2) owns the call; the model connection is a
   replaceable child: on `GoAway` or close, resume with the latest handle or re-seed a
   session from the persisted transcript with the same voice (fixed once a session has spoken), never
   dropping the phone leg.
@@ -166,7 +166,10 @@ and client-side resume are `frontend`'s.
   here (crash-durability vs. best-effort-delivery are different problems).
 - Presence/auth needs per-connection authorization decisions (who can join which room) → implement
   against `auth`'s session/token model; don't invent a parallel authz path for sockets.
-- Voice-to-voice latency SLI, call cost, carrier outages, or recording retention → `operate`
-  (`surface-ai-system.md` "Time-to-first-token is a distinct SLI from total duration"); verifying
-  the call at the caller's ear → `quality` (`surface-ai-system.md` "Voice: evidence at the caller's
-  ear").
+- Voice operations → `operate`: the latency SLI (`surface-ai-system.md` "Time-to-first-token is a
+  distinct SLI from total duration"), call cost and concurrency (`capacity-and-cost.md` "The
+  2020s-specific version: agent and LLM spend scales with activity, not users"), carrier outages
+  (`surface-ai-system.md` "Provider outages are correlated across everyone using them"), recording
+  retention (`observability.md` "AI-system observability — same discipline, one new signal").
+  Verifying the call at the caller's ear → `quality` (`surface-ai-system.md` "Voice: evidence at the
+  caller's ear").
