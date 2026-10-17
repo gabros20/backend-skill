@@ -87,5 +87,16 @@
       "There is one repository per aggregate root, not one per entity",
       "Cross-aggregate coordination (if any) uses a domain event, not a single transaction spanning two aggregate roots"
     ]
+  },
+  {
+    "id": "operation-ledger-external-effect",
+    "prompt": "Our agent's send-invoice tool sometimes times out after the provider received the request. Make it safe to retry.",
+    "assertions": [
+      "A ledger/operation row is reserved in a transaction BEFORE the external call, with a unique constraint on the logical action + resource scope",
+      "A genuine retry resends the same downstream idempotency key; a new user-authorized action gets a new logical ID — the two are kept distinct",
+      "A post-submit timeout is recorded as `unknown` and reconciled by downstream lookup or target-state read, then parked for manual review if still unclear — never blindly resent",
+      "The receipt is persisted before the run advances, and the remaining crash window (downstream success before the local receipt write) is named rather than claimed closed",
+      "Exactly one layer (workflow engine, agent framework, or client wrapper) owns the retry of this side effect"
+    ]
   }
 ]

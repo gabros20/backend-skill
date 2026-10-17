@@ -140,6 +140,26 @@
     ]
   },
   {
+    "id": "agentic-operation-ledger",
+    "prompt": "Our agent's send-invoice tool timed out and we can't tell whether the invoice went out. Make retries safe so it never double-sends, and park unclear outcomes for review.",
+    "expected_references": ["references/async-and-messaging.md", "references/surface-agentic.md"],
+    "forbidden_references": [
+      "references/surface-realtime.md",
+      "references/surface-serverless-edge.md",
+      "references/caching-and-performance.md"
+    ]
+  },
+  {
+    "id": "realtime-agent-run-resume",
+    "prompt": "Our agent runs take minutes and users close the tab or switch to their phone mid-run. Build the SSE progress stream so they pick up where they left off without duplicated output.",
+    "expected_references": ["references/surface-realtime.md", "references/surface-agentic.md"],
+    "forbidden_references": [
+      "references/surface-serverless-edge.md",
+      "references/surface-event-driven-microservices.md",
+      "references/persistence.md"
+    ]
+  },
+  {
     "id": "contract-consumption-with-handoff",
     "prompt": "Architecture already produced the API contract, NFR budget, and threat model for the payments service. Implement the endpoints and the controls the threat model calls out, and hand off to quality for independent verification.",
     "expected_references": ["references/api-implementation.md", "references/server-security.md", "references/handoff.md"],

@@ -8,7 +8,27 @@ The release procedure synchronizes `.codex-plugin/plugin.json`, this changelog, 
 ## [Unreleased]
 
 ### Added
-- Queue unreleased changes here.
+- **Operation ledger for external effects** (`async-and-messaging` §2 + Recipe 3 in the
+  idempotency/outbox asset): one reserved row per irreversible action, unique on logical action +
+  resource scope, same downstream key only on a genuine retry, receipt before advancing,
+  post-submit timeout → `unknown` → lookup or park, fencing tokens on expiring leases; points to
+  `architecture` for the contract and `automation` for vendor reconciliation.
+- **One execution owner per side effect** in durable execution — only one layer (workflow engine,
+  graph checkpointer, wrapper) retries a given effect. Backend's Postgres-backed-first default is
+  unchanged.
+- **Replayable run events** (`surface-realtime` §6): run + outbox in one transaction, sequenced
+  persisted events, `Last-Event-ID` resume, snapshot on an expired cursor, provisional partial text,
+  disconnect never cancels.
+- **Run control** (`surface-agentic` §7): approval as a paused run re-checked and consumed at
+  execution, per-run version pins with draining workers, transactional budget reservation that
+  children draw from, four lifecycles linked by reference; **MCP/OAuth token rules** in §6
+  (audience validation, no token passthrough, secrets never in model context) with a one-line
+  echo in `auth`.
+- `persistence`: pgvector filtered-search underfill and the RLS bypass by privileged connections.
+- `service-integration`: a model gateway as substrate — feature parity per route, its retries as one
+  retry layer, explicit credential fallback, never a permission grant.
+- Router rows, a frontend handoff seam, and evals: 1 positive + 2 near-miss activation cases
+  (`automation` reconciliation, `ai` model routing), 2 traversal cases, 1 output case.
 
 ## [0.1.1] — 2026-07-27
 

@@ -70,6 +70,7 @@ The security references and their checklist assets that paraphrase these carry a
 |---|---|
 | [OWASP Top 10:2021](https://owasp.org/Top10/) | server-security, owasp-backend-controls-checklist |
 | [OWASP ASVS v5.0](https://asvs.dev/) | server-security |
+| [OWASP AI Agent Security Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/AI_Agent_Security_Cheat_Sheet.html) — atomic check-and-consume of an approval before execution | surface-agentic |
 | OWASP Cheat Sheet Series — [Password Storage](https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html), SQL Injection Prevention, Input Validation, Secrets Management, [HTTP Security Response Headers](https://cheatsheetseries.owasp.org/cheatsheets/HTTP_Headers_Cheat_Sheet.html), CSRF Prevention | auth, server-security, auth-implementation-checklist, owasp-backend-controls-checklist |
 
 ## Cited, not copied — restrictive / no-license, standards, and concepts
@@ -90,8 +91,16 @@ drawn from the open standard or the primary concept, not from these renderings' 
   [OpenAPI](https://spec.openapis.org/), [AsyncAPI](https://www.asyncapi.com), [gRPC/proto3](https://grpc.io),
   [GraphQL](https://graphql.org) + the Relay cursor-connection spec, SQL-92 isolation levels,
   [PostgreSQL transaction isolation docs](https://www.postgresql.org/docs/current/transaction-iso.html),
-  [PgBouncer features](https://www.pgbouncer.org/features.html), the
-  [Model Context Protocol](https://modelcontextprotocol.io).
+  [PgBouncer features](https://www.pgbouncer.org/features.html),
+  [PostgreSQL row security policies](https://www.postgresql.org/docs/current/ddl-rowsecurity.html)
+  (persistence — who bypasses RLS), the WHATWG HTML
+  [Server-sent events](https://html.spec.whatwg.org/multipage/server-sent-events.html) section
+  (`Last-Event-ID` resume — surface-realtime), [RFC 8707](https://www.rfc-editor.org/rfc/rfc8707)
+  resource indicators, and the [Model Context Protocol](https://modelcontextprotocol.io) — its
+  [Authorization spec](https://modelcontextprotocol.io/specification/latest/basic/authorization)
+  (token audience validation, no token transit) and
+  [Security Best Practices](https://modelcontextprotocol.io/docs/draft/tutorials/security/security_best_practices)
+  (token passthrough, confused deputy) — surface-agentic, auth.
 - **Concepts / books (concept index only, never reproduced):** Eric Evans, *Domain-Driven Design*;
   Vaughn Vernon, *Implementing Domain-Driven Design*; Alistair Cockburn, *Hexagonal Architecture*;
   Robert C. Martin, *Clean Architecture* (the Dependency Rule); Martin Kleppmann, *Designing
@@ -105,6 +114,24 @@ drawn from the open standard or the primary concept, not from these renderings' 
   execution); Guillermo Rauch (agent-legible backends), Rhys Sullivan (Effect token-efficiency),
   `arpit_bhayani` (OpenAI's single-primary Postgres), DrizzleORM and CodeHagen (Drizzle/Prisma
   discourse) on X.
+- **Cited documentation and engineering accounts — read 2026-10-17, re-verify before a hard claim:**
+  Temporal docs — [Activity definition](https://docs.temporal.io/activity-definition) (idempotency;
+  run ID + activity ID as key; worker crash before reporting), [Retry policies](https://docs.temporal.io/encyclopedia/retry-policies)
+  (activities retry by default, unlimited attempts), [Worker Versioning](https://docs.temporal.io/worker-versioning)
+  (pinned and draining versions); LangGraph docs — [Fault tolerance](https://docs.langchain.com/oss/javascript/langgraph/fault-tolerance)
+  (retries opt-in) and [Checkpointers](https://docs.langchain.com/oss/javascript/langgraph/checkpointers)
+  (replay re-executes later nodes' API calls); AWS Builders' Library — "Making retries safe with
+  idempotent APIs" (parameter mismatch on a reused token); Martin Kleppmann, "How to do distributed
+  locking" (2016, fencing tokens); Cursor, ["What we've learned building cloud agents"](https://cursor.com/blog/cloud-agent-lessons)
+  (Jun 2026 — decoupled agent loop / machine / conversation state, client stream rewind);
+  [pgvector README](https://github.com/pgvector/pgvector) *Filtering* and *Iterative Index Scans*;
+  Supabase [Row Level Security guide](https://supabase.com/docs/guides/database/postgres/row-level-security)
+  (`service_role` bypasses RLS); LiteLLM docs — [Drop unsupported params](https://docs.litellm.ai/docs/completion/drop_params)
+  and [Router](https://docs.litellm.ai/docs/routing) (gateway-level retries, cooldowns, fallbacks);
+  Vercel AI Gateway [BYOK](https://vercel.com/docs/ai-gateway/authentication-and-byok/byok)
+  (failed BYOK request falls back to system credentials, billed to credits — a dated example). The
+  three-way gateway taxonomy (marketplace / proxy-policy / hosted-inference catalog) in
+  service-integration is this pack's classification of those products' own docs, not a quoted source.
 - **Verify-before-hard-claim (stated as uncertain or omitted in the pack):** the "42% microservices
   rollback" / "40% regret" statistics (omitted — no primary CNCF/ThoughtWorks source confirmed);
   exact current datastore product-license terms (taught as *shape*, verify before asserting);

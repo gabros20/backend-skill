@@ -70,6 +70,11 @@
     "should_trigger": true
   },
   {
+    "id": "positive-agent-operation-ledger",
+    "prompt": "Our agent's send-invoice tool timed out and we can't tell whether the invoice actually went out. Fix the backend so a retry never double-sends and an unclear outcome gets parked for review.",
+    "should_trigger": true
+  },
+  {
     "id": "negative-architecture-system-design",
     "prompt": "Design the system boundaries and bounded contexts for our new order-management platform from scratch.",
     "should_trigger": false
@@ -107,6 +112,16 @@
   {
     "id": "negative-quality-load-test",
     "prompt": "Run a load test against the checkout service and report where it falls over.",
+    "should_trigger": false
+  },
+  {
+    "id": "negative-automation-vendor-reconciliation",
+    "prompt": "Every night, compare our CRM deals against the billing vendor's own subscription records and flag the ones a missed webhook left out of sync.",
+    "should_trigger": false
+  },
+  {
+    "id": "negative-ai-model-routing",
+    "prompt": "Decide which model tier each user request should go to, and set up a learned router that escalates to the strongest model on hard tasks.",
     "should_trigger": false
   }
 ]
