@@ -92,7 +92,7 @@ worker-crash-before-report rerun) — only a downstream key or lookup does. An e
 (Kleppmann, *How to do distributed locking*). Cancel stops future steps; it undoes nothing. The
 contract is `architecture`'s (`contracts.md`, *API-contract review checklist*, Idempotency and
 Error-handling rows); reconciling against a vendor's own records is `automation`'s
-(`reconciliation.md`).
+(`reconciliation.md` "Compare the ID set before the fields, then classify — never binary").
 
 ### 3. Transactional outbox — **owned here**
 The dual-writes problem, precisely: an app that commits its DB write, then separately writes to a
@@ -125,8 +125,9 @@ don't pass the raw CDC message straight to consumers. Default cleanup: delete th
 ### 4. Saga — **owned here**
 When a business transaction spans multiple services/databases (private data each; cross-service 2PC
 would hold every participant's locks for the whole round — fragile under partition, rarely
-justified), replace the ACID transaction with a saga: a sequence of local transactions, each publishing an event/command that
-triggers the next; failures are undone with compensating transactions, not automatic rollback.
+justified), replace the ACID transaction with a saga: a sequence of local transactions, each
+publishing an event/command that triggers the next; failures are undone with compensating
+transactions, not automatic rollback.
 
 Two coordination styles:
 - **Choreography** — services react to each other's domain events, no central coordinator. Less

@@ -119,7 +119,8 @@ For an agent run or long job, the stream is a *view over a persisted log*, not t
   we've learned building cloud agents*, Jun 2026).
 - Cancel, approve, and other mutations are authenticated API calls, not stream messages; a closed
   stream is a connectivity event, never an implicit cancel.
-The event contract's shape is `architecture`'s; rendering and client-side resume are `frontend`'s.
+The event contract's shape is `architecture`'s (`contracts.md` "Contract-first design"); rendering
+and client-side resume are `frontend`'s.
 
 ## Validation
 - [ ] Transport choice (SSE vs WS) is justified by whether the client needs to push mid-stream, not

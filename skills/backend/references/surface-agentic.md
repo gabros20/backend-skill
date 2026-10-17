@@ -123,14 +123,14 @@ require an explicit scope grant per action class rather than a single broad "age
 **MCP/OAuth token rules.** An MCP server is an OAuth resource server: validate issuer, expiry,
 scopes, and that the token names *this* server as audience (RFC 8707) — the MCP authorization spec
 makes that a MUST and forbids accepting or transiting any other token (MCP Security Best Practices,
-*Token Passthrough*). Call downstream with a token issued for *that* audience — obtained per user
-by the server as its own OAuth client, or by token exchange (RFC 8693) — never the inbound token
-and never one shared account acting for every user; an MCP proxy on a static client ID keeps
-per-client consent. A state handle a tool returns (cart, workflow ID) is never authentication —
-bind it server-side to the verified user. Refresh tokens and connection secrets stay server-side,
-referenced by ID — never in model context, tool arguments, or logs. MCP is not application
-authorization: every tool call still passes `auth`'s per-object check. Credential fleet lifecycle →
-`automation` (`credentials-and-connections.md`).
+*Token Passthrough*). Call downstream with a token issued for *that* audience — obtained per user by
+the server as its own OAuth client, or by token exchange (RFC 8693) — never the inbound token and
+never one shared account acting for every user; an MCP proxy on a static client ID keeps per-client
+consent. A state handle a tool returns (cart, workflow ID) is never authentication — bind it
+server-side to the verified user. Refresh tokens and connection secrets stay server-side, referenced
+by ID — never in model context, tool arguments, or logs. MCP is not application authorization: every
+tool call still passes `auth`'s per-object check. Credential fleet lifecycle → `automation`
+(`credentials-and-connections.md` "The frame: fleet management, not identity design").
 
 ### 7. Run control: approvals, version pins, budgets, linked lifecycles
 - **Approval is a paused run, not a new turn.** Persist the request and the waiting state; the
@@ -174,6 +174,8 @@ authorization: every tool call still passes `auth`'s per-object check. Credentia
 - [ ] Approvals pause the run and are re-checked (grants, expiry, nonce, payload) and consumed at
       execution; each run pins its versions and holds a transactional budget reservation that its
       children draw from.
+- [ ] The recovery drills `quality` assigns to backend (`surface-ai-system.md` "Recovery and
+      side-effect evidence") exist as integration tests, not only as prose.
 - [ ] Retrieval-first check: current docs/CLI/SDK for any agent-facing vendor tool (Drizzle, Better-
       Auth, MCP SDK) were fetched, not assumed from training data.
 

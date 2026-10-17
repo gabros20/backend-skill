@@ -102,13 +102,13 @@ dependency is confirmed down, rather than continuing to jitter-retry against a f
   structured output, caching, streaming events, and cancellation differ per provider, and a
   portability layer may reject or silently drop an unsupported parameter (LiteLLM raises by default,
   drops with `drop_params`) — test the features you use, per route. Gateways retry, cool down, and
-  fall back on their own (LiteLLM Router): that is a retry layer, counted in
-  `async-and-messaging` §6's budget, with exactly one layer owning retries. Know its credential
-  fallback, then decide and document it — e.g. as of 2026-10-17 Vercel AI Gateway retries a failed
-  bring-your-own-key request on its system credentials and bills your gateway credits; ZDR narrows
-  that fallback, and a budget does not cap BYOK spend. A gateway picks an inference route; it never grants tool permission,
+  fall back on their own (LiteLLM Router): that is a retry layer, counted in `async-and-messaging`
+  §6's budget, with exactly one layer owning retries. Know its credential fallback, then decide and
+  document it — e.g. as of 2026-10-17 Vercel AI Gateway retries a failed bring-your-own-key request
+  on its system credentials and bills your gateway credits; ZDR narrows that fallback, and a budget
+  does not cap BYOK spend. A gateway picks an inference route; it never grants tool permission,
   tenant access, or action authorization. Which model a request should get is `ai`'s
-  (`model-selection-and-routing.md`).
+  (`model-selection-and-routing.md` "Routing cascade — the #1 cost lever").
 - **Provider-generated outputs are yours to keep.** Copy results into your own storage before the
   provider's retention window closes (Replicate deletes API prediction inputs, outputs, and files
   after an hour by default — docs read 2026-10-17). A paid job that times out after submit is a
