@@ -108,10 +108,12 @@ For an agent run or long job, the stream is a *view over a persisted log*, not t
   ID; never acknowledge work that exists only in process memory.
 - Persist each meaningful event: schema version, run ID, event ID, monotonic per-run sequence,
   step/attempt ID, type, and the payload or an artifact reference (large outputs by reference).
-- Resume by cursor: send the sequence as the SSE `id:` field; on reconnect the browser returns it
-  as the `Last-Event-ID` header (WHATWG HTML, *Server-sent events*), and the server replays the
-  committed events after it, then tails. Cursor aged out of retention → send a state snapshot first.
-  The replay read is authorized like any other read.
+- Resume by cursor, from either source: an existing `EventSource` reconnecting sends the last
+  `id:` back as the `Last-Event-ID` header — but only then (WHATWG HTML, *Server-sent events*); a
+  reloaded tab, a second device, or a fetch-based client sends none, so also accept the cursor as an
+  explicit parameter (e.g. `?after=<sequence>`, or in a fetch stream's request). Replay committed
+  events after the cursor, then tail. No cursor, or one aged out of retention → send the current
+  snapshot with its sequence first, then tail. The replay read is authorized like any other read.
 - Mark partial model text provisional, keyed by step/attempt, so a retried step's committed output
   replaces it — Cursor's cloud agents rewind the client stream on exactly this case (Cursor, *What
   we've learned building cloud agents*, Jun 2026).
@@ -131,8 +133,8 @@ The event contract's shape is `architecture`'s; rendering and client-side resume
 - [ ] Reconnect/backoff handling is implemented client-side for both SSE and WS paths (SSE's native
       auto-reconnect doesn't cover application-level state resync).
 - [ ] A run that outlives its connection streams from a persisted, sequenced event log: replay after
-      `Last-Event-ID`, snapshot when the cursor expired, mutations as authenticated calls, and a
-      disconnect never cancels the run.
+      the client's cursor (`Last-Event-ID` or an explicit parameter), snapshot + sequence when there
+      is no cursor or it expired, mutations as authenticated calls, and a disconnect never cancels.
 
 ## Failure modes and handoff
 - The base request-lifecycle question (validation, error shape, auth on the initial handshake) is

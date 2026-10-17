@@ -103,18 +103,18 @@ dependency is confirmed down, rather than continuing to jitter-retry against a f
   portability layer may reject or silently drop an unsupported parameter (LiteLLM raises by default,
   drops with `drop_params`) — test the features you use, per route. Gateways retry, cool down, and
   fall back on their own (LiteLLM Router): that is a retry layer, counted in
-  `async-and-messaging` §6's budget, with exactly one layer owning retries. Set credential fallback
-  explicitly — e.g. as of 2026-10-17 Vercel AI Gateway retries a failed bring-your-own-key request
-  on its system credentials and bills your gateway credits, a cost and data-policy choice rather
-  than a default to inherit. A gateway picks an inference route; it never grants tool permission,
+  `async-and-messaging` §6's budget, with exactly one layer owning retries. Know its credential
+  fallback, then decide and document it — e.g. as of 2026-10-17 Vercel AI Gateway retries a failed
+  bring-your-own-key request on its system credentials and bills your gateway credits; ZDR narrows
+  that fallback, and a budget does not cap BYOK spend. A gateway picks an inference route; it never grants tool permission,
   tenant access, or action authorization. Which model a request should get is `ai`'s
   (`model-selection-and-routing.md`).
 - **Provider-generated outputs are yours to keep.** Copy results into your own storage before the
   provider's retention window closes (Replicate deletes API prediction inputs, outputs, and files
-  after an hour by default — docs read 2026-10-17); a paid job that times out after submit is a
-  ledger `unknown` (`async-and-messaging` §2) — reconcile before a second paid submission.
-- Transactional email/SMS providers get the same client-resilience treatment; most also webhook-notify
-  on delivery/bounce/complaint — that inbound notification goes back through §3.
+  after an hour by default — docs read 2026-10-17). A paid job that times out after submit is a
+  ledger `unknown` (`async-and-messaging` §2) — reconcile before a second paid submission. Poll with
+  authenticated status calls when callbacks cannot be trusted; stop polling at a deadline, but keep
+  reconciling any job that may still bill.
 
 ## Validation
 - [ ] Every outbound client call has a bounded, jittered retry — no unbounded retry loops
@@ -128,7 +128,7 @@ dependency is confirmed down, rather than continuing to jitter-retry against a f
 - [ ] Rate-limit headers from the external API are respected proactively, not just caught as errors
       after the fact
 - [ ] A model gateway's own retries/fallbacks are counted as one retry layer, the features in use are
-      tested per route, and its credential-fallback behavior is set explicitly
+      tested per route, and its credential-fallback behavior is known, decided, and documented
 
 ## Failure modes and handoff
 - The request is actually about internal jobs/broker/CDC/saga, not an external system →

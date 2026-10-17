@@ -19,10 +19,9 @@ Skip when:
 - The work is streaming analytics/OLAP off an event stream → `data`.
 - The work is deploying, scaling, or monitoring the broker/queue itself → `operate`.
 - SQL mechanics for a jobs table (indexes, isolation level, connection pooling) → `persistence`.
-- The saga spans **vendors you cannot deploy to** rather than your own services — the compensating
-  action does not exist on the other side (no un-send, no un-charge), or a step is a human approval
-  → `automation`. The saga/idempotency/outbox mechanics defined here still apply; the discipline for
-  running them against an opaque third party is `automation`'s.
+- The saga spans **vendors you cannot deploy to** — no compensating action exists on the other side
+  (no un-send, no un-charge), or a step is a human approval → `automation`. The mechanics here
+  still apply; the discipline for running them against an opaque third party is `automation`'s.
 
 Inputs:
 - Current stack (already Postgres-centric? existing broker?), rough throughput, and whether the
@@ -31,8 +30,9 @@ Inputs:
 
 Produces:
 - A broker/queue pick with rationale, plus the reliability patterns applied: idempotency-key path,
-  operation ledger (if a worker calls out to an irreversible effect), outbox (if a DB write must reliably notify elsewhere), saga with compensations (if multi-service),
-  an explicit delivery-semantics stance, and a durable-execution decision if the process is long-lived.
+  operation ledger (if a worker calls out to an irreversible effect), outbox (if a DB write must
+  reliably notify elsewhere), saga with compensations (if multi-service), an explicit
+  delivery-semantics stance, and a durable-execution decision if the process is long-lived.
 
 ## Contents
 - Choosing the queue/broker (Postgres-as-queue vs Kafka/NATS/RabbitMQ/SQS)
@@ -49,10 +49,9 @@ Produces:
 Default: if the system is already Postgres-centric and volume is modest, don't add a broker. Use a
 jobs table with `SELECT ... FOR UPDATE SKIP LOCKED` as the safe-concurrent-dequeue primitive (via
 pg-boss, Hatchet, or hand-rolled) — Hatchet's own SQL schema uses exactly this and is load-tested to
-10k tasks/sec on it. Tradeoff, stated by Hatchet's own README: this consumes more DB resources than a
-Redis/RabbitMQ-backed queue in exchange for full execution history for free (no separate admin
-tooling to replay/inspect failed jobs). Point to `persistence` for the SQL/pooling/isolation-level
-mechanics — this ref owns the *shape* decision, not the SQL primitives.
+10k tasks/sec on it. Tradeoff, per Hatchet's README: more DB resources than a Redis/RabbitMQ-backed
+queue, in exchange for full execution history for free (no separate replay/inspect tooling). SQL,
+pooling, and isolation mechanics → `persistence`; this ref owns the *shape* decision.
 
 Beyond single-process jobs, pick by what's actually needed:
 - **Kafka** — steady/dominant default for high-throughput, ordered event streaming; 4.0 (Mar 2025)
@@ -61,12 +60,12 @@ Beyond single-process jobs, pick by what's actually needed:
 - **RabbitMQ** — steady enterprise standard; strong routing topology (exchanges/queues) when message
   routing complexity matters more than raw throughput.
 - **SQS** — AWS-managed default when already on AWS; native DLQ via redrive policy.
-- Cost is an architectural axis, not an afterthought: shared-storage designs (e.g. diskless Kafka on
-  S3) trade local-disk throughput for lower cross-AZ egress cost — a real 2025-2026 line item, not
-  just latency. (Flag if recommending an open-core diskless-Kafka product: OSS core vs. commercial
-  control-plane/HA tier are separate things — verify which one a recommendation actually covers.)
-- Anti-pattern: reaching for Kafka/RabbitMQ because "that's the standard" for a workload that's
-  actually a handful of background jobs — the Postgres jobs table is simpler ops for that case.
+- Cost is an architectural axis: shared-storage designs (e.g. diskless Kafka on S3) trade local-disk
+  throughput for lower cross-AZ egress cost — a real 2025-2026 line item. For an open-core
+  diskless-Kafka product, verify whether a recommendation covers the OSS core or the commercial
+  control-plane/HA tier.
+- Anti-pattern: Kafka/RabbitMQ "because it's the standard" for what is a handful of background
+  jobs — the Postgres jobs table is simpler ops there.
 
 ### 2. Idempotency keys — **owned here**
 A client-supplied unique token per logical operation; the server persists `(key → result)` with a
@@ -79,17 +78,16 @@ time window) and status-based (dedupe by run status) — Hatchet ships both as S
 raw hash-the-payload trick. See `assets/idempotency-and-outbox-recipes.md` for a fillable handler.
 
 **Operation ledger for external effects — owned here.** The idempotency key dedupes retries coming
-*in*; a worker or agent tool calling *out* to an effect you cannot roll back (send, charge,
-provision) needs the mirror image — one ledger row per consequential action, reserved in a
-transaction before the call, **unique on logical action + resource scope** (DDL and states: the
+*in*; a call *out* to an effect you cannot roll back (send, charge, provision) needs the mirror
+image — one ledger row per consequential action, reserved in a transaction before the call, **unique on logical action + resource scope** (DDL and states: the
 recipes asset, Recipe 3). A genuine retry resends the **same** downstream key (Temporal: workflow
 run ID + activity ID is stable across retries); a new user-authorized action gets a new logical ID;
 same key with different arguments is a validation error, not a replay (AWS Builders' Library,
 *Making retries safe with idempotent APIs*). Persist the receipt before advancing. A post-submit
-timeout is `unknown`: look it up downstream or read the target's state, else park for review —
-never re-fire an irreversible call. The ledger alone does not close the window between downstream
-success and the local receipt write (Temporal documents it: the activity succeeds, the worker
-crashes before reporting, the activity reruns) — only a downstream key or lookup does. An expiring
+timeout writes `unknown` and runs the reconcile path (Recipe 3, step 4; the rule is `architecture`'s
+Idempotency row). The ledger alone does not close the window between downstream success and the
+local receipt write (Temporal documents the worker-crash-before-report rerun) — only a downstream
+key or lookup does. An expiring
 lease needs a **fencing token** the store checks, so a stalled worker cannot write after ownership
 moved (Kleppmann, *How to do distributed locking*). Cancel stops future steps; it undoes nothing.
 The contract is `architecture`'s (`contracts.md`, *API-contract review checklist*, Idempotency and
@@ -125,10 +123,9 @@ don't pass the raw CDC message straight to consumers. Default cleanup: delete th
 (`remove-after-insert`) so the table doesn't grow unbounded.
 
 ### 4. Saga — **owned here**
-When a business transaction spans multiple services/databases (each has private data — no shared
-schema, no cross-service 2PC in practice: all participants would hold locks for the whole
-coordination round, which is fragile under partition and rarely justified), replace the ACID
-transaction with a saga: a sequence of local transactions, each publishing an event/command that
+When a business transaction spans multiple services/databases (private data each; cross-service 2PC
+would hold every participant's locks for the whole round — fragile under partition, rarely
+justified), replace the ACID transaction with a saga: a sequence of local transactions, each publishing an event/command that
 triggers the next; failures are undone with compensating transactions, not automatic rollback.
 
 Two coordination styles:
@@ -136,9 +133,8 @@ Two coordination styles:
   coupling, but the overall flow is only visible by tracing events across services.
 - **Orchestration** — a central orchestrator issues commands and tracks state. Easier to observe and
   reason about, at the cost of reintroducing a coordination point. `on_failure_task()`-style hooks (a
-  step that runs only after the workflow fails, with access to the failing task's error) are a clean,
-  minimal shape for orchestrated compensation logic — simpler to implement than a bespoke saga
-  coordinator.
+  step that runs only after the workflow fails, with the failing task's error) are a minimal shape
+  for orchestrated compensation — simpler than a bespoke saga coordinator.
 
 Constraint from domain design: sagas exist precisely because a transaction must never span aggregate
 boundaries — each local step commits one aggregate; the saga coordinates across many. Default: prefer
@@ -151,10 +147,9 @@ step's local write and next-step publish are atomic.
 duplicates are possible) vs **exactly-once** (needs transactional coordination across the broker,
 costs roughly 10-20% throughput per Kafka's own transactional-producer numbers). Industry-consensus
 default: **prefer at-least-once + idempotent consumers** over paying the exactly-once tax; reserve
-true exactly-once for narrow, high-value paths (financial ledgers). This is one lesson told multiple
-ways across the ecosystem (a workflow engine's "activity must be idempotent or non-retryable"
-contract, a CDC tool's "ordering/durability are guaranteed, delivery semantics is a downstream
-per-consumer choice") — teach it once here, reuse everywhere.
+true exactly-once for narrow, high-value paths (financial ledgers). The same lesson recurs as a
+workflow engine's "idempotent or non-retryable activity" contract and a CDC tool's "delivery
+semantics is a per-consumer choice" — teach it once here.
 
 ### 6. Retry, backoff, jitter, DLQ
 Exponential backoff alone causes lockstep retry storms under contention. Use jitter — three
@@ -172,9 +167,9 @@ automated replay). Combine retry+jitter with a circuit breaker (mechanics owned 
 `service-integration`) so retries stop entirely once a dependency is confirmed down.
 
 ### 7. Durable execution
-When a multi-step process must survive crashes/deploys without a hand-rolled state machine or a
-saga-compensation nightmare, durable execution is the current default — rising further with
-AI-agent orchestration, since a long-running tool-calling loop maps directly onto workflow/activity.
+When a multi-step process must survive crashes/deploys without a hand-rolled state machine,
+durable execution is the current default — rising with agent orchestration, since a tool-calling
+loop maps directly onto workflow/activity.
 
 Core mental model: every execution is an append-only event History; current state is derived by
 *replaying* History, not stored as a blob. Two task types on one poll loop — Workflow Tasks (resume
@@ -182,7 +177,8 @@ deterministic user code until it blocks on a timer/activity/completion) vs Activ
 side-effecting I/O). The determinism contract, teach verbatim: **workflow code must be deterministic
 and side-effect-free (replay-safe); activity code must be idempotent OR non-retryable** — this is the
 idempotency/determinism boundary from §2, applied at the engine level. Durable sleep (suspend a
-workflow on a timer without holding a worker process alive) is the clearest single illustration of
+workflow on a timer, or in a durable wait for an external signal such as an approval, without
+holding a worker process alive) is the clearest single illustration of
 the category for someone new to it.
 
 Two runtimes, two tradeoffs:
@@ -199,11 +195,10 @@ Two runtimes, two tradeoffs:
   worker fleets are actually needed.
 - **One execution owner per side effect.** When a graph runtime's checkpointer runs inside a
   workflow engine (LangGraph in Temporal), the engine owns the business lifecycle, the graph the
-  agent state, and exactly one layer retries each side effect: Temporal retries activities by
-  default (unlimited unless capped), LangGraph node retries are opt-in, and a checkpoint replay
-  re-executes later nodes' API calls — stacked, they multiply the effect. Same for a durability
-  wrapper around a framework that persists its own session. Engine-level task dedup does not make
-  the actions inside a task replay-safe — that is the ledger's job (§2).
+  agent state, and exactly one layer retries each side effect — Temporal retries activities by
+  default and a LangGraph replay re-executes later nodes' calls, so stacked layers multiply the
+  effect. Same for a durability wrapper around a framework that persists its own session. Engine
+  task dedup does not make the actions inside a task replay-safe — that is the ledger's job (§2).
 
 ## Validation
 - [ ] Every client-retriable mutation has an idempotency-key path (persisted key→result, TTL set)

@@ -48,13 +48,11 @@ Produces:
 
 ### 1. Durable execution as the default control plane, not an afterthought
 Treat "the agent loop must survive a crash/restart/deploy" as a default requirement, not an edge
-case — this is the single loudest 2025-2026 shift in agent-backend architecture. OpenAI's Agents
-SDK integrates **Temporal** for durable execution specifically because long-running,
-tool-calling agent loops map onto the workflow/activity split naturally (deterministic
-orchestration code that can replay, vs. side-effecting tool calls that must be idempotent or
-non-retryable). ThoughtWorks Technology Radar flags **"Ignoring Durability in Agent Workflows"**
-as a **Caution** — i.e., shipping an agent loop as an in-memory process with no crash-recovery
-story is a named, called-out anti-pattern, not a hypothetical risk.
+case — the loudest 2025-2026 shift in agent-backend architecture. OpenAI's Agents SDK integrates
+**Temporal** because a tool-calling loop maps onto the workflow/activity split (replayable
+orchestration vs. side-effecting tool calls that must be idempotent or non-retryable).
+ThoughtWorks Technology Radar flags **"Ignoring Durability in Agent Workflows"** as a **Caution**:
+an in-memory agent loop with no crash-recovery story is a named anti-pattern.
 Do NOT re-derive the workflow/activity split, idempotency-key mechanics, or the Postgres-backed
 alternative (Hatchet) here — those live in `async-and-messaging`; this surface only tells you
 *when* to reach for them: reach for durable execution whenever an agent loop (a) spans more than
@@ -73,11 +71,9 @@ which is needed:
 - **MCP servers** — a standardized protocol surface that exposes a *set* of backend capabilities
   (tools, resources, prompts) to any MCP-capable agent client, not just one caller. Reach for this
   when the backend capability should be reusable across multiple agent clients/products rather than
-  wired to one agent loop. Vendors are shipping this as the default integration path for their own
-  products: Sanity ships an MCP server to stand up a content backend from a description; Postgres-
-  MCP exists specifically for migrations. If the request is "let an agent use this backend," ask
-  whether it needs to be MCP-shaped (multi-client, protocol-standard) or a bespoke tool endpoint
-  (single caller, simpler) before building either.
+  wired to one agent loop. If the request is "let an agent use this backend," ask whether it needs
+  to be MCP-shaped (multi-client, protocol-standard) or a bespoke tool endpoint (single caller,
+  simpler) before building either.
 
 ### 3. Agent-legible contracts and errors
 An agent is a client that reads your API surface as text, not through a hand-built UI — the
@@ -109,14 +105,11 @@ explicitly which half — prompt/chunking/eval (`ai`) or the serving backend (th
 being asked to build; state the split back if it's ambiguous rather than assuming both.
 
 ### 5. Best-practice skills for the datastore
-Every major backend tool is now shipping an agent-facing interface to its own best practices — a
-2026 throughline, not a one-off. Drizzle ships an LLM-agent CLI/SDK; Supabase ships installable
-"Postgres best-practices" agent skills; Better-Auth ships `npx skills add` for its own auth setup.
-When this surface's build touches a datastore/framework that has a maintained agent-skill or
-agent-CLI of its own, prefer installing/consulting it over hand-writing the same guidance — it's
-maintained by the vendor and version-tracks their releases (reinforces this skill's retrieval-first
-invariant: fetch current docs/tools rather than trusting pretrained knowledge of a fast-moving
-target).
+Major backend tools now ship an agent-facing interface to their own best practices — Drizzle an
+LLM-agent CLI/SDK, Supabase installable "Postgres best-practices" agent skills, Better-Auth
+`npx skills add`. When the build touches a datastore/framework with a maintained agent-skill or
+agent-CLI, prefer consulting it over hand-writing the same guidance: the vendor maintains it and it
+version-tracks their releases (retrieval-first, applied).
 
 ### 6. Agent-scoped auth
 An agent acting on a user's behalf is a distinct principal from the human — don't reuse the human's
@@ -129,23 +122,24 @@ require an explicit scope grant per action class rather than a single broad "age
 
 **MCP/OAuth token rules.** An MCP server is an OAuth resource server: validate issuer, expiry,
 scopes, and that the token names *this* server as audience (RFC 8707) — the MCP authorization spec
-makes that a MUST and forbids accepting or transiting any other token. Its security best practices
-name **token passthrough** (forwarding the client's token downstream) as the anti-pattern behind
-confused-deputy and broken audit: call downstream with the server's own credential; an MCP proxy on
-a static client ID keeps per-client consent. A state handle a tool returns (cart, workflow ID) is
-never authentication — bind it server-side to the verified user. Refresh tokens and connection
-secrets stay server-side, referenced by ID — never in model context, tool arguments, or logs. MCP is
-not application authorization: every tool call still passes `auth`'s per-object check. Credential
-fleet lifecycle → `automation` (`credentials-and-connections.md`).
+makes that a MUST and forbids accepting or transiting any other token (MCP Security Best Practices,
+*Token Passthrough*). Call downstream with a token issued for *that* audience — obtained per user
+by the server as its own OAuth client, or by token exchange (RFC 8693) — never the inbound token
+and never one shared account acting for every user; an MCP proxy on a static client ID keeps
+per-client consent. A state handle a tool returns (cart, workflow ID) is never authentication —
+bind it server-side to the verified user. Refresh tokens and connection secrets stay server-side,
+referenced by ID — never in model context, tool arguments, or logs. MCP is not application
+authorization: every tool call still passes `auth`'s per-object check. Credential fleet lifecycle →
+`automation` (`credentials-and-connections.md`).
 
 ### 7. Run control: approvals, version pins, budgets, linked lifecycles
 - **Approval is a paused run, not a new turn.** Persist the request and the waiting state; the
-  approval is an authenticated API call writing a one-use decision that signals the run
-  (`async-and-messaging` §7). On resume, re-check current grants plus the approval's expiry, nonce,
-  and payload hash, and consume it in the executing step (OWASP AI Agent Security Cheat Sheet:
-  check and consume atomically, immediately before execution). What an approval binds is decided
-  upstream (`architecture` `surface-agentic.md`, *Agent security*); a duplicate effect after a crash
-  is the operation ledger's to stop (`async-and-messaging` §2), not the approval's.
+  approval is an authenticated API call writing a one-use decision that resumes the run's durable
+  wait (`async-and-messaging` *Durable execution*). On resume, re-check current grants plus the
+  approval's expiry, nonce, and payload hash, and consume it in the executing step (OWASP AI Agent
+  Security Cheat Sheet: check and consume atomically, immediately before execution). What an
+  approval binds is decided upstream (`architecture` `surface-agentic.md`, *Agent security*); a
+  duplicate effect after a crash is the operation ledger's to stop (`async-and-messaging` §2).
 - **Pin versions per run** — prompt, tool, skill, model config, workflow definition — and keep old
   workers until their runs drain or migrate explicitly (Temporal Worker Versioning: pinned workflows
   finish on one deployment version while the old one drains; docs read 2026-10-17). A deploy must
@@ -154,10 +148,15 @@ fleet lifecycle → `automation` (`credentials-and-connections.md`).
   settle estimated vs billed idempotently. Per-tenant concurrency keys (`async-and-messaging` §7)
   keep one tenant from draining a shared provider quota.
 - **Four lifecycles, linked by reference** — run engine, conversation/event store, sandbox, object
-  storage. A transcript cannot restore a lost process; a replay cannot recover a file the sandbox
-  discarded, so copy artifacts out first (Cursor keeps loop, machine, and conversation state
+  storage; persist references between them (Cursor keeps loop, machine, and conversation state
   decoupled — *What we've learned building cloud agents*). The engine owns execution history, the
   product database user-facing records; never write one status in both without a reconcile rule.
+- **The sandbox's environment adapter is backend's** (create, execute, persist artifacts, close):
+  the application server is never the execution environment; per-run sandbox identity; scoped
+  credentials injected by reference, never master keys; an egress allowlist with the metadata
+  service and internal networks denied; artifacts persisted out before teardown. Provider choice,
+  capacity, and teardown monitoring → `operate` (`environments-and-configuration.md`, *Hosted agent
+  sandboxes*); the isolation decision itself is `architecture`'s threat model.
 
 ## Validation
 - [ ] Every agent-loop path spanning >1 tool call or >1 request cycle has a stated durability

@@ -71,8 +71,9 @@ Two independent fixes, often combined — full mechanics owned by [persistence](
   some `SET`/temp-table usage) unless the pooler version specifically restores them (PgBouncer 1.21+
   added prepared-statement support in transaction mode — verify the deployed version, don't assume).
   A pooler can also *cache*: Hyperdrive caches eligible read-only query results by default
-  (`max_age` 60 s; Cloudflare docs, *Query caching*, read 2026-10-17) — disable it for any path that
-  reads permissions, billing, or an operation ledger, which tolerate no staleness.
+  (`max_age` 60 s plus 15 s `stale_while_revalidate`; Cloudflare docs, *Query caching*, read
+  2026-10-17), and the switch is per configuration, not per query — route reads of permissions,
+  billing, or an operation ledger through a second, cache-disabled binding.
 - **An HTTP-native driver that skips persistent TCP connections entirely** — e.g. Neon's HTTP driver
   or Turso/libSQL's HTTP protocol issue each query as a stateless HTTP request instead of holding a
   socket open. This is a clean fit for edge runtimes where holding long-lived TCP sockets is awkward
@@ -113,7 +114,10 @@ its own private storage and in-memory state, reachable from anywhere but always 
 instance — the mechanism for strong consistency and coordination at the edge where a conventional
 edge-cache primitive would give you race conditions instead. Full realtime/fan-out treatment lives
 in `surface-realtime`; here, use them whenever a piece of *non-realtime* state (a lock, a counter,
-a per-tenant coordinator) needs single-writer semantics that KV/D1 can't provide.
+a per-tenant coordinator) needs single-writer semantics that KV/D1 can't provide. One object per
+coordination unit (user, room, tenant), never one global object for every request — Cloudflare's
+*Rules of Durable Objects* call that a chokepoint. A name always maps to the same object, so derive
+it server-side from the verified identity, never from a client-supplied ID.
 
 ## The adapter-isolates-runtime principle
 

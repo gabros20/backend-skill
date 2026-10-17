@@ -92,8 +92,9 @@ Two grants cover essentially all backend needs; treat the other two RFC 6749 gra
   the token's own `alg` header — this is what lets an attacker flip `RS256`→`HS256` or `alg:none` and
   fool a verifier that treats a public key as an HMAC secret), reject `alg:none` explicitly, and always
   validate `exp`, `nbf`, `iss`, `aud` — not just signature validity. `aud` must name *this* service:
-  never forward an inbound bearer token to another service — call it with your own credential (the
-  MCP rule, in `surface-agentic` §6).
+  never forward an inbound bearer token to another service — call it with a token issued for that
+  service (your own per-user OAuth grant, or RFC 8693 token exchange); the MCP rule is in
+  `surface-agentic` §6.
 
 ### 3. Password hashing
 **Argon2id, minimum `m=19MiB, t=2, p=1`** (memory-hard, GPU/ASIC-resistant, PHC-competition winner) is

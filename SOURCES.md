@@ -96,7 +96,7 @@ drawn from the open standard or the primary concept, not from these renderings' 
   (persistence — who bypasses RLS), the WHATWG HTML
   [Server-sent events](https://html.spec.whatwg.org/multipage/server-sent-events.html) section
   (`Last-Event-ID` resume — surface-realtime), [RFC 8707](https://www.rfc-editor.org/rfc/rfc8707)
-  resource indicators, and the [Model Context Protocol](https://modelcontextprotocol.io) — its
+  resource indicators, OAuth 2.0 Token Exchange [RFC 8693](https://www.rfc-editor.org/rfc/rfc8693), and the [Model Context Protocol](https://modelcontextprotocol.io) — its
   [Authorization spec](https://modelcontextprotocol.io/specification/latest/basic/authorization)
   (token audience validation, no token transit) and
   [Security Best Practices](https://modelcontextprotocol.io/docs/draft/tutorials/security/security_best_practices)
@@ -131,7 +131,9 @@ drawn from the open standard or the primary concept, not from these renderings' 
   Vercel AI Gateway [BYOK](https://vercel.com/docs/ai-gateway/authentication-and-byok/byok)
   (failed BYOK request falls back to system credentials, billed to credits — a dated example);
   Cloudflare Hyperdrive [Query caching](https://developers.cloudflare.com/hyperdrive/concepts/query-caching/)
-  (on by default, 60 s `max_age` — surface-serverless-edge); Replicate
+  (on by default, 60 s `max_age` + 15 s `stale_while_revalidate`, disabled per configuration —
+  surface-serverless-edge); Cloudflare [Rules of Durable Objects](https://developers.cloudflare.com/durable-objects/best-practices/rules-of-durable-objects/)
+  (one object per coordination unit, no single global object — surface-serverless-edge); Replicate
   [Data retention](https://replicate.com/docs/topics/predictions/data-retention) (API prediction data
   removed after an hour by default — service-integration). The
   three-way gateway taxonomy (marketplace / proxy-policy / hosted-inference catalog) in

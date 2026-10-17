@@ -18,7 +18,8 @@ The release procedure synchronizes `.codex-plugin/plugin.json`, this changelog, 
   unchanged.
 - **Replayable run events** (`surface-realtime` §6): run + outbox in one transaction, sequenced
   persisted events, `Last-Event-ID` resume, snapshot on an expired cursor, provisional partial text,
-  disconnect never cancels.
+  disconnect never cancels; the cursor arrives as `Last-Event-ID` or an explicit parameter, and a
+  cursorless stream gets the snapshot first.
 - **Run control** (`surface-agentic` §7): approval as a paused run re-checked and consumed at
   execution, per-run version pins with draining workers, transactional budget reservation that
   children draw from, four lifecycles linked by reference; **MCP/OAuth token rules** in §6
@@ -28,10 +29,14 @@ The release procedure synchronizes `.codex-plugin/plugin.json`, this changelog, 
 - `service-integration`: a model gateway as substrate — feature parity per route, its retries as one
   retry layer, explicit credential fallback, never a permission grant; copy provider outputs before
   their retention window closes.
-- `surface-serverless-edge`: a pooler's default query cache is off for permission, billing, and
-  ledger reads. `surface-agentic` §6 also binds tool-returned state handles to the verified user.
+- `surface-serverless-edge`: route permission, billing, and ledger reads through a cache-disabled
+  pooler binding; one Durable Object per coordination unit, named from the verified identity.
+  `surface-agentic` §6 also binds tool-returned state handles to the verified user and calls
+  downstream with a per-audience token (per-user grant or RFC 8693 exchange).
+- `surface-agentic` §7: backend owns the sandbox's environment adapter and its controls; provider
+  choice, capacity, and teardown monitoring stay with `operate`.
 - Router rows, a frontend handoff seam, and evals: 1 positive + 2 near-miss activation cases
-  (`automation` reconciliation, `ai` model routing), 2 traversal cases, 1 output case.
+  (`automation` reconciliation, `ai` model routing), 2 traversal cases, 2 output cases.
 
 ## [0.1.1] — 2026-07-27
 

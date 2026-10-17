@@ -98,5 +98,16 @@
       "The receipt is persisted before the run advances, and the remaining crash window (downstream success before the local receipt write) is named rather than claimed closed",
       "Exactly one layer (workflow engine, agent framework, or client wrapper) owns the retry of this side effect"
     ]
+  },
+  {
+    "id": "agent-run-stream-resume",
+    "prompt": "Our agent runs take minutes; users reload the tab or open the run on their phone mid-run. Build the progress stream so they pick up where they left off without duplicated output.",
+    "assertions": [
+      "Events are persisted with a monotonic per-run sequence, and the stream is served from that log rather than from the live process",
+      "Resume accepts the client's cursor from `Last-Event-ID` OR an explicit parameter (e.g. `?after=<sequence>`), noting that a reload, a second device, or a fetch-based client sends no `Last-Event-ID`",
+      "A stream with no cursor, or an expired one, gets the current snapshot with its sequence first, then tails — never a full replay that duplicates output",
+      "Partial model text is marked provisional per step/attempt so a retried step's committed output replaces it",
+      "Closing the stream never cancels the run; cancel is a separate authenticated API call"
+    ]
   }
 ]
