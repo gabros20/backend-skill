@@ -79,18 +79,18 @@ raw hash-the-payload trick. See `assets/idempotency-and-outbox-recipes.md` for a
 
 **Operation ledger for external effects — owned here.** The idempotency key dedupes retries coming
 *in*; a call *out* to an effect you cannot roll back (send, charge, provision) needs the mirror
-image — one ledger row per consequential action, reserved in a transaction before the call, **unique on logical action + resource scope** (DDL and states: the
-recipes asset, Recipe 3). A genuine retry resends the **same** downstream key (Temporal: workflow
-run ID + activity ID is stable across retries); a new user-authorized action gets a new logical ID;
-same key with different arguments is a validation error, not a replay (AWS Builders' Library,
-*Making retries safe with idempotent APIs*). Persist the receipt before advancing. A post-submit
-timeout writes `unknown` and runs the reconcile path (Recipe 3, step 4; the rule is `architecture`'s
-Idempotency row). The ledger alone does not close the window between downstream success and the
-local receipt write (Temporal documents the worker-crash-before-report rerun) — only a downstream
-key or lookup does. An expiring
-lease needs a **fencing token** the store checks, so a stalled worker cannot write after ownership
-moved (Kleppmann, *How to do distributed locking*). Cancel stops future steps; it undoes nothing.
-The contract is `architecture`'s (`contracts.md`, *API-contract review checklist*, Idempotency and
+image — one ledger row per consequential action, reserved in a transaction before the call, **unique
+on logical action + resource scope** (DDL and states: the recipes asset, Recipe 3). A genuine retry
+resends the **same** downstream key (Temporal: workflow run ID + activity ID is stable across
+retries); a new user-authorized action gets a new logical ID; same key with different arguments is a
+validation error, not a replay (AWS Builders' Library, *Making retries safe with idempotent APIs*).
+Persist the receipt before advancing. A post-submit timeout writes `unknown` and runs the reconcile
+path (Recipe 3, step 4; the rule is `architecture`'s Idempotency row). The ledger alone does not
+close the window between downstream success and the local receipt write (Temporal documents the
+worker-crash-before-report rerun) — only a downstream key or lookup does. An expiring lease needs a
+**fencing token** the store checks, so a stalled worker cannot write after ownership moved
+(Kleppmann, *How to do distributed locking*). Cancel stops future steps; it undoes nothing. The
+contract is `architecture`'s (`contracts.md`, *API-contract review checklist*, Idempotency and
 Error-handling rows); reconciling against a vendor's own records is `automation`'s
 (`reconciliation.md`).
 
