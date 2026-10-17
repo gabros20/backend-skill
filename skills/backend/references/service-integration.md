@@ -115,6 +115,8 @@ dependency is confirmed down, rather than continuing to jitter-retry against a f
   ledger `unknown` (`async-and-messaging` §2) — reconcile before a second paid submission. Poll with
   authenticated status calls when callbacks cannot be trusted; stop polling at a deadline, but keep
   reconciling any job that may still bill.
+- Transactional email/SMS providers get the same client-resilience treatment; most also webhook-notify
+  on delivery/bounce/complaint — that inbound notification goes back through §3.
 
 ## Validation
 - [ ] Every outbound client call has a bounded, jittered retry — no unbounded retry loops

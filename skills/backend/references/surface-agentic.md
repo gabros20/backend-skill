@@ -155,8 +155,8 @@ authorization: every tool call still passes `auth`'s per-object check. Credentia
   the application server is never the execution environment; per-run sandbox identity; scoped
   credentials injected by reference, never master keys; an egress allowlist with the metadata
   service and internal networks denied; artifacts persisted out before teardown. Provider choice,
-  capacity, and teardown monitoring → `operate` (`environments-and-configuration.md`, *Hosted agent
-  sandboxes*); the isolation decision itself is `architecture`'s threat model.
+  capacity, and teardown monitoring → `operate` (`surface-ai-system.md`, *Agent sandboxes in
+  production*); the isolation decision itself is `architecture`'s threat model.
 
 ## Validation
 - [ ] Every agent-loop path spanning >1 tool call or >1 request cycle has a stated durability
