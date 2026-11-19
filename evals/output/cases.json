@@ -120,5 +120,15 @@
       "Treats the model connection as a replaceable child of the call: reconnects on the provider's warning or close with a resumption handle or a re-seeded session, without dropping the phone leg",
       "Session-cap figures are not restated but taken from `ai` as dated facts; turn detection and model choice are pointed to `ai`, not designed here"
     ]
+  },
+  {
+    "id": "standalone-context-check",
+    "prompt": "Build me an API for my invoicing app.",
+    "assertions": [
+      "Before writing code it reads the repo and any digital-product/LEDGER.md Context, and asks nothing the repo already answers (language, framework, existing database).",
+      "It asks at most four questions in one round (for example whether a contract exists, who signs in and whether customer data is kept apart, which outside services it calls, what 'done' means), each with a recommended answer — or, if it cannot ask, proceeds and opens the result with the assumptions that would change it most.",
+      "With no contract it drafts a minimal one for approval before code, and recommends architecture only if the system's shape itself is open.",
+      "Answers and assumptions are recorded in the LEDGER's Context block, each assumption with its basis and cost to reverse."
+    ]
   }
 ]

@@ -28,6 +28,37 @@ solution-architecture doc, contracts, an NFR budget, a threat model, a `handoff.
 them rather than re-deriving. Recommend adjacent skills when useful; never invoke them automatically
 unless the user explicitly requested a composition workflow.
 
+## Standalone context check
+
+Before producing anything the user will have to live with:
+1. **Look first.** Read `digital-product/LEDGER.md` (Context), `digital-product/<pack>/`, upstream
+   artifacts, the repo and this conversation. A fact found is never asked; a fact recorded is never
+   re-asked.
+2. **Size it.** Reversible and small → proceed, stating assumptions. New, costly or hard to undo →
+   check.
+3. **Ask only what the owner alone knows**, in their words: one round, at most four, highest
+   leverage first, each with a recommended answer ("ok" accepts all). Two rounds at most.
+4. **No or thin answers → decide as the expert.** Record each assumption with its basis and cost to
+   reverse; prefer the reversible option; show the cheapest proof early.
+5. **No way to ask → never block.** Proceed, and open the artifact with the assumptions and the
+   answers that would change it most.
+6. **Write it down.** Answers and assumptions go to the LEDGER's Context block.
+
+This pack's questions:
+1. Is there a contract to build against (an API spec, a design doc, a client already calling it),
+   or do I shape it? (Recommended: I draft a minimal one for your OK before any code.)
+2. Are the database and the host already chosen? (Read the repo first. Recommended: one
+   relational database on a managed host.)
+3. Who signs in, and must each customer's data be kept apart from every other's? (Recommended: a
+   managed sign-in provider; per-account separation from day one.)
+4. Which outside services must it talk to — payments, email, other apps — and what happens if one
+   is down? (Recommended: retry safely, never charge or send twice.)
+5. What does "done" mean: a prototype to react to, or production with tests and a deploy?
+
+No `architecture` artifact and the shape itself is open (service split, public API style, data
+store) → recommend `architecture`; otherwise build the default surface and record the shape as
+assumed.
+
 ## Route before acting
 
 1. Pick the **one primary job** the request needs (≥1 row below — most requests are one; name it).
