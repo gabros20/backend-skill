@@ -44,7 +44,7 @@ Before producing anything the user will have to live with:
    answers that would change it most.
 6. **Write it down.** Answers and assumptions go to the LEDGER's Context block.
 
-This pack's questions:
+This pack's questions (a pool — ask the top four that step 1 left open):
 1. Is there a contract to build against (an API spec, a design doc, a client already calling it),
    or do I shape it? (Recommended: I draft a minimal one for your OK before any code.)
 2. Are the database and the host already chosen? (Read the repo first. Recommended: one
